@@ -1,0 +1,32 @@
+IMPORTANT LINUX COMMANDS
+Command	Meaning
+ls	show files
+pwd	current folder
+cd DSBDA	open folder
+mkdir DSBDA	create folder
+touch file.scala	create scala file
+nano file.scala	open scala file
+scala file.scala	run scala
+jupyter notebook	open jupyter
+spark-shell	open spark scala
+SIMPLE FLOW FOR PRACTICAL
+Python Experiments
+Open Jupyter
+↓
+New → Python 3
+↓
+Save notebook
+↓
+Paste code
+↓
+Shift + Enter
+Scala Experiments
+Open Terminal
+↓
+touch filename.scala
+↓
+nano filename.scala
+↓
+Paste code
+↓
+scala filename.scala
