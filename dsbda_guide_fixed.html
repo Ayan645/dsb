@@ -1,0 +1,2450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSBDA Practical Exam Guide — TECA</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --papaya: #FF7D00;
+    --papaya-bright: #FF9A35;
+    --carbon: #0D0D0D;
+    --carbon-mid: #161616;
+    --carbon-panel: #1E1E1E;
+    --carbon-border: #2A2A2A;
+    --silver: #C8C8C8;
+    --silver-dim: #888;
+    --white: #F5F5F5;
+    --green: #00FF88;
+    --blue: #3B9EFF;
+    --red: #FF3B3B;
+    --yellow: #FFD600;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--carbon);
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(255,125,0,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(120px, 25vw, 280px);
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255,125,0,0.15);
+    position: absolute;
+    right: -20px; top: 50%;
+    transform: translateY(-50%);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .hero-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--papaya);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .hero-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(48px, 9vw, 110px);
+    font-weight: 900;
+    line-height: 0.9;
+    text-transform: uppercase;
+    letter-spacing: -2px;
+  }
+
+  .hero-title span { color: var(--papaya); }
+
+  .hero-sub {
+    margin-top: 24px;
+    font-size: 16px;
+    color: var(--silver-dim);
+    max-width: 480px;
+    line-height: 1.6;
+  }
+
+  .hero-badges {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    background: var(--carbon-panel);
+    border: 1px solid var(--carbon-border);
+    border-radius: 4px;
+    padding: 6px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--silver-dim);
+  }
+
+  .badge.active { border-color: var(--papaya); color: var(--papaya); }
+
+  /* ── NAV STRIP ── */
+  .nav-strip {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(13,13,13,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--carbon-border);
+    padding: 0 32px;
+    overflow-x: auto;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    white-space: nowrap;
+    scrollbar-width: none;
+  }
+
+  .nav-strip::-webkit-scrollbar { display: none; }
+
+  .nav-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--papaya);
+    letter-spacing: 3px;
+    padding: 0 16px 0 0;
+    border-right: 1px solid var(--carbon-border);
+    margin-right: 8px;
+  }
+
+  .nav-btn {
+    background: none;
+    border: none;
+    color: var(--silver-dim);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 16px 16px;
+    cursor: pointer;
+    transition: color 0.2s;
+    position: relative;
+  }
+
+  .nav-btn::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 16px; right: 16px;
+    height: 2px;
+    background: var(--papaya);
+    transform: scaleX(0);
+    transition: transform 0.2s;
+  }
+
+  .nav-btn:hover { color: var(--white); }
+  .nav-btn:hover::after { transform: scaleX(1); }
+  .nav-btn.active { color: var(--papaya); }
+  .nav-btn.active::after { transform: scaleX(1); }
+
+  /* ── MAIN CONTAINER ── */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 32px 120px;
+  }
+
+  /* ── EXPERIMENT CARD ── */
+  .exp-card {
+    margin-top: 80px;
+    border: 1px solid var(--carbon-border);
+    border-radius: 8px;
+    overflow: hidden;
+    animation: fadeIn 0.4s ease both;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .exp-header {
+    background: var(--carbon-panel);
+    padding: 28px 32px;
+    border-bottom: 1px solid var(--carbon-border);
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+  }
+
+  .exp-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 64px;
+    font-weight: 900;
+    color: var(--papaya);
+    line-height: 1;
+    min-width: 80px;
+  }
+
+  .exp-meta { flex: 1; }
+
+  .exp-group {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--papaya);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .exp-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--white);
+  }
+
+  .exp-desc {
+    margin-top: 8px;
+    font-size: 14px;
+    color: var(--silver-dim);
+    line-height: 1.6;
+  }
+
+  .difficulty {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+  }
+
+  .diff-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--carbon-border);
+  }
+
+  .diff-dot.on { background: var(--papaya); }
+  .diff-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--silver-dim);
+    margin-left: 4px;
+  }
+
+  /* ── SECTIONS INSIDE CARD ── */
+  .exp-section {
+    border-top: 1px solid var(--carbon-border);
+  }
+
+  .section-toggle {
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--white);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s;
+  }
+
+  .section-toggle:hover { background: rgba(255,125,0,0.04); }
+
+  .section-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .section-icon {
+    font-size: 16px;
+    width: 28px;
+    text-align: center;
+  }
+
+  .toggle-arrow {
+    font-size: 12px;
+    color: var(--papaya);
+    transition: transform 0.3s;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .toggle-arrow.open { transform: rotate(180deg); }
+
+  .section-body {
+    padding: 0 32px 28px;
+    display: none;
+  }
+
+  .section-body.open { display: block; }
+
+  /* ── CODE BLOCK ── */
+  .code-wrap {
+    position: relative;
+    background: #0A0A0A;
+    border: 1px solid var(--carbon-border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+
+  .code-topbar {
+    background: var(--carbon-panel);
+    border-bottom: 1px solid var(--carbon-border);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .code-lang {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--papaya);
+    letter-spacing: 2px;
+  }
+
+  .copy-btn {
+    background: var(--carbon-border);
+    border: none;
+    color: var(--silver-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .copy-btn:hover { background: var(--papaya); color: #000; }
+  .copy-btn.copied { background: var(--green); color: #000; }
+
+  pre {
+    padding: 20px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: #D4D4D4;
+    tab-size: 4;
+  }
+
+  pre .kw { color: #569CD6; }
+  pre .fn { color: #DCDCAA; }
+  pre .str { color: #CE9178; }
+  pre .cm { color: #6A9955; font-style: italic; }
+  pre .num { color: #B5CEA8; }
+  pre .cls { color: #4EC9B0; }
+  pre .op { color: #D4D4D4; }
+  pre .var { color: #9CDCFE; }
+
+  /* ── INFO BOXES ── */
+  .info-box {
+    background: var(--carbon-panel);
+    border-left: 3px solid var(--papaya);
+    border-radius: 0 6px 6px 0;
+    padding: 16px 20px;
+    margin-top: 16px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--silver);
+  }
+
+  .info-box.green { border-left-color: var(--green); }
+  .info-box.blue { border-left-color: var(--blue); }
+  .info-box.red { border-left-color: var(--red); }
+  .info-box.yellow { border-left-color: var(--yellow); }
+
+  .info-box strong { color: var(--papaya); font-weight: 600; }
+  .info-box.green strong { color: var(--green); }
+  .info-box.blue strong { color: var(--blue); }
+  .info-box.yellow strong { color: var(--yellow); }
+
+  /* ── OUTPUT PREVIEW ── */
+  .output-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .output-chip {
+    background: #0A0A0A;
+    border: 1px solid var(--carbon-border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    line-height: 1.6;
+  }
+
+  .output-chip .label {
+    color: var(--silver-dim);
+    font-size: 9px;
+    letter-spacing: 2px;
+    display: block;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  /* ── STEPS ── */
+  .steps { margin-top: 12px; }
+
+  .step {
+    display: flex;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    align-items: flex-start;
+  }
+
+  .step:last-child { border-bottom: none; }
+
+  .step-num {
+    min-width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--papaya);
+    color: #000;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .step-text {
+    font-size: 14px;
+    color: var(--silver);
+    line-height: 1.6;
+    padding-top: 4px;
+  }
+
+  .step-text code {
+    background: rgba(255,125,0,0.1);
+    color: var(--papaya);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  /* ── VIVA Q&A ── */
+  .viva-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .viva-item {
+    border: 1px solid var(--carbon-border);
+    border-radius: 6px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .viva-item:hover { border-color: var(--papaya); }
+
+  .viva-q {
+    width: 100%;
+    background: var(--carbon-panel);
+    border: none;
+    color: var(--white);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    text-align: left;
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    gap: 12px;
+  }
+
+  .viva-q-icon { color: var(--papaya); font-size: 12px; flex-shrink: 0; }
+
+  .viva-a {
+    background: #0A0A0A;
+    padding: 0 20px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease, padding 0.25s ease;
+    font-size: 14px;
+    color: var(--silver);
+    line-height: 1.7;
+  }
+
+  .viva-a.open {
+    max-height: 400px;
+    padding: 14px 20px 16px;
+  }
+
+  .viva-a strong { color: var(--papaya); }
+
+  /* ── DATASET ALERT ── */
+  .dataset-alert {
+    display: flex;
+    gap: 14px;
+    background: rgba(255, 214, 0, 0.05);
+    border: 1px solid rgba(255, 214, 0, 0.2);
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin-top: 12px;
+  }
+
+  .dataset-alert .icon { font-size: 20px; flex-shrink: 0; }
+  .dataset-alert .content { font-size: 13px; color: var(--silver); line-height: 1.7; }
+  .dataset-alert .content strong { color: var(--yellow); }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    padding: 48px 32px;
+    border-top: 1px solid var(--carbon-border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--silver-dim);
+    letter-spacing: 2px;
+  }
+
+  .footer span { color: var(--papaya); }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--carbon); }
+  ::-webkit-scrollbar-thumb { background: var(--carbon-border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--papaya); }
+
+  /* ── PULSE DOT ── */
+  .pulse {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s infinite;
+    margin-right: 8px;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  /* ── TAG ── */
+  .tag {
+    display: inline-block;
+    background: rgba(255,125,0,0.12);
+    border: 1px solid rgba(255,125,0,0.3);
+    color: var(--papaya);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    margin: 3px 3px 3px 0;
+  }
+
+  .tag.green { background: rgba(0,255,136,0.1); border-color: rgba(0,255,136,0.3); color: var(--green); }
+  .tag.blue { background: rgba(59,158,255,0.1); border-color: rgba(59,158,255,0.3); color: var(--blue); }
+
+  ul.custom { list-style: none; padding: 0; margin-top: 10px; }
+  ul.custom li {
+    padding: 6px 0 6px 20px;
+    position: relative;
+    font-size: 14px;
+    color: var(--silver);
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+  ul.custom li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--papaya);
+    font-size: 10px;
+    top: 8px;
+  }
+
+  h4.sec-sub {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--papaya);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 20px 0 8px;
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-num">4</div>
+  <div class="hero-tag"><span class="pulse"></span>SPPU · TECA · 310256</div>
+  <h1 class="hero-title">DSBDA<br><span>Practical</span><br>Exam Guide</h1>
+  <p class="hero-sub">All experiments with working code, execution steps, expected output & viva Q&A. Built for exam day confidence.</p>
+  <div class="hero-badges">
+    <div class="badge active">Group A — Python</div>
+    <div class="badge active">Group B — Java/Hadoop</div>
+    <div class="badge active">Group B — Scala</div>
+    <div class="badge">Ayan Sheikh · TECA113</div>
+  </div>
+</section>
+
+<!-- NAV STRIP -->
+<nav class="nav-strip">
+  <span class="nav-label">JUMP TO</span>
+  <button class="nav-btn" onclick="scrollTo('exp1')">A1 · Wrangling I</button>
+  <button class="nav-btn" onclick="scrollTo('exp2')">A2 · Wrangling II</button>
+  <button class="nav-btn" onclick="scrollTo('exp3')">A3 · Stats</button>
+  <button class="nav-btn" onclick="scrollTo('exp4')">A4 · Lin Reg</button>
+  <button class="nav-btn" onclick="scrollTo('exp5')">A5 · Log Reg</button>
+  <button class="nav-btn" onclick="scrollTo('exp6')">A6 · Naive Bayes</button>
+  <button class="nav-btn" onclick="scrollTo('exp7')">A7 · Text Analytics</button>
+  <button class="nav-btn" onclick="scrollTo('exp8')">A8 · Viz I</button>
+  <button class="nav-btn" onclick="scrollTo('exp9')">A9 · Viz II</button>
+  <button class="nav-btn" onclick="scrollTo('exp10')">A10 · Viz III</button>
+  <button class="nav-btn" onclick="scrollTo('exp11')">B1 · WordCount</button>
+  <button class="nav-btn" onclick="scrollTo('exp12')">B3 · Weather</button>
+  <button class="nav-btn" onclick="scrollTo('exp13')">B4 · Scala</button>
+</nav>
+
+<div class="container">
+
+<!-- ════════════════════════════════════════════
+  EXP 1 — DATA WRANGLING I
+════════════════════════════════════════════ -->
+<div class="exp-card" id="exp1">
+  <div class="exp-header">
+    <div class="exp-num">01</div>
+    <div class="exp-meta">
+      <div class="exp-group">Group A · Assignment 1</div>
+      <div class="exp-title">Data Wrangling I</div>
+      <div class="exp-desc">Load an open-source dataset, handle missing values, standardize data types, normalize selected columns, and encode categorical variables using dummy encoding.</div>
+      <div class="difficulty">
+        <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot"></div><div class="diff-dot"></div><div class="diff-dot"></div>
+        <span class="diff-label">EASY — 2/5</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CODE -->
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">💻</span>Complete Code</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body open">
+      <div class="code-wrap">
+        <div class="code-topbar"><span class="code-lang">PYTHON · JUPYTER NOTEBOOK</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm"># Assignment 1 — Data Wrangling I
+# Dataset: Automobile dataset (autodata.csv)</span>
+
+<span class="kw">import</span> <span class="var">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+<span class="kw">import</span> <span class="var">numpy</span> <span class="kw">as</span> <span class="var">np</span>
+<span class="kw">import</span> <span class="var">matplotlib.pyplot</span> <span class="kw">as</span> <span class="var">plt</span>
+
+<span class="cm"># ── STEP 1: Load Dataset ─────────────────────</span>
+<span class="var">df</span> <span class="op">=</span> <span class="var">pd</span>.<span class="fn">read_csv</span>(<span class="str">"autodata.csv"</span>)
+<span class="cm"># If file not present, use backup URL:</span>
+<span class="cm"># df = pd.read_csv("https://archive.ics.uci.edu/ml/machine-learning-databases/autos/imports-85.data", header=None)</span>
+<span class="fn">print</span>(<span class="str">"Shape:"</span>, <span class="var">df</span>.<span class="var">shape</span>)
+<span class="var">df</span>.<span class="fn">head</span>()
+
+<span class="cm"># ── STEP 2: Inspect ──────────────────────────</span>
+<span class="var">df</span>.<span class="fn">info</span>()
+<span class="var">df</span>.<span class="fn">describe</span>()
+
+<span class="cm"># ── STEP 3: Check Missing Values ─────────────</span>
+<span class="fn">print</span>(<span class="str">"\nNull values per column:"</span>)
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">isnull</span>().<span class="fn">sum</span>())
+
+<span class="cm"># ── STEP 4: Fill Missing Values ──────────────</span>
+<span class="cm"># Replace NaN in numeric columns with mean</span>
+<span class="kw">for</span> <span class="var">col</span> <span class="kw">in</span> [<span class="str">'stroke'</span>, <span class="str">'horsepower'</span>, <span class="str">'peak-rpm'</span>]:
+    <span class="kw">if</span> <span class="var">col</span> <span class="kw">in</span> <span class="var">df</span>.<span class="var">columns</span>:
+        <span class="var">df</span>[<span class="var">col</span>] <span class="op">=</span> <span class="var">pd</span>.<span class="fn">to_numeric</span>(<span class="var">df</span>[<span class="var">col</span>], <span class="var">errors</span><span class="op">=</span><span class="str">'coerce'</span>)
+        <span class="var">df</span>[<span class="var">col</span>].<span class="fn">fillna</span>(<span class="var">df</span>[<span class="var">col</span>].<span class="fn">mean</span>(), <span class="var">inplace</span><span class="op">=</span><span class="kw">True</span>)
+
+<span class="cm"># Replace NaN in categorical with mode</span>
+<span class="kw">if</span> <span class="str">'num-of-doors'</span> <span class="kw">in</span> <span class="var">df</span>.<span class="var">columns</span>:
+    <span class="var">df</span>[<span class="str">'num-of-doors'</span>].<span class="fn">fillna</span>(<span class="var">df</span>[<span class="str">'num-of-doors'</span>].<span class="fn">mode</span>()[<span class="num">0</span>], <span class="var">inplace</span><span class="op">=</span><span class="kw">True</span>)
+
+<span class="fn">print</span>(<span class="str">"\nAfter cleaning — Null values:"</span>)
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">isnull</span>().<span class="fn">sum</span>().<span class="fn">sum</span>())
+
+<span class="cm"># ── STEP 5: Data Normalization ────────────────</span>
+<span class="kw">for</span> <span class="var">col</span> <span class="kw">in</span> [<span class="str">'length'</span>, <span class="str">'width'</span>, <span class="str">'height'</span>]:
+    <span class="kw">if</span> <span class="var">col</span> <span class="kw">in</span> <span class="var">df</span>.<span class="var">columns</span>:
+        <span class="var">df</span>[<span class="var">col</span>] <span class="op">=</span> <span class="var">df</span>[<span class="var">col</span>] <span class="op">/</span> <span class="var">df</span>[<span class="var">col</span>].<span class="fn">max</span>()
+
+<span class="fn">print</span>(<span class="str">"\nNormalized length/width/height:"</span>)
+<span class="fn">print</span>(<span class="var">df</span>[[<span class="str">'length'</span>, <span class="str">'width'</span>, <span class="str">'height'</span>]].<span class="fn">head</span>())
+
+<span class="cm"># ── STEP 6: Dummy Variables (Encoding) ────────</span>
+<span class="kw">if</span> <span class="str">'aspiration'</span> <span class="kw">in</span> <span class="var">df</span>.<span class="var">columns</span>:
+    <span class="var">dummy</span> <span class="op">=</span> <span class="var">pd</span>.<span class="fn">get_dummies</span>(<span class="var">df</span>[<span class="str">'aspiration'</span>])
+    <span class="var">df</span> <span class="op">=</span> <span class="var">pd</span>.<span class="fn">concat</span>([<span class="var">df</span>, <span class="var">dummy</span>], <span class="var">axis</span><span class="op">=</span><span class="num">1</span>)
+    <span class="var">df</span>.<span class="fn">drop</span>(<span class="str">'aspiration'</span>, <span class="var">axis</span><span class="op">=</span><span class="num">1</span>, <span class="var">inplace</span><span class="op">=</span><span class="kw">True</span>)
+    <span class="fn">print</span>(<span class="str">"\nDummy encoded aspiration — first 5 rows:"</span>)
+    <span class="fn">print</span>(<span class="var">df</span>[<span class="var">dummy</span>.<span class="var">columns</span>].<span class="fn">head</span>())
+
+<span class="cm"># ── STEP 7: Binning (Bonus) ───────────────────</span>
+<span class="kw">if</span> <span class="str">'horsepower'</span> <span class="kw">in</span> <span class="var">df</span>.<span class="var">columns</span>:
+    <span class="var">df</span>[<span class="str">'horsepower'</span>] <span class="op">=</span> <span class="var">df</span>[<span class="str">'horsepower'</span>].<span class="fn">astype</span>(<span class="cls">float</span>)
+    <span class="var">bins</span> <span class="op">=</span> <span class="var">np</span>.<span class="fn">linspace</span>(<span class="var">df</span>[<span class="str">'horsepower'</span>].<span class="fn">min</span>(), <span class="var">df</span>[<span class="str">'horsepower'</span>].<span class="fn">max</span>(), <span class="num">4</span>)
+    <span class="var">df</span>[<span class="str">'hp-binned'</span>] <span class="op">=</span> <span class="var">pd</span>.<span class="fn">cut</span>(<span class="var">df</span>[<span class="str">'horsepower'</span>], <span class="var">bins</span>,
+                              <span class="var">labels</span><span class="op">=</span>[<span class="str">'Low'</span>, <span class="str">'Medium'</span>, <span class="str">'High'</span>],
+                              <span class="var">include_lowest</span><span class="op">=</span><span class="kw">True</span>)
+    <span class="fn">print</span>(<span class="str">"\nHorsepower bins:"</span>)
+    <span class="fn">print</span>(<span class="var">df</span>[<span class="str">'hp-binned'</span>].<span class="fn">value_counts</span>())
+
+<span class="fn">print</span>(<span class="str">"\n✓ Assignment 1 complete"</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW TO RUN -->
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">🚀</span>How to Execute</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-text">Open terminal → type <code>jupyter notebook</code> → browser opens</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-text">Create new notebook: <code>New → Python 3</code></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-text">If <code>autodata.csv</code> is in Downloads, move it to the same folder as notebook OR change path to full path like <code>/home/user/Downloads/autodata.csv</code></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-text">Paste the code into cells. Run each cell with <code>Shift + Enter</code></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-text">If a column doesn't exist in your dataset, the <code>if col in df.columns</code> guard handles it — no crash</div></div>
+      </div>
+      <div class="dataset-alert">
+        <div class="icon">⚠️</div>
+        <div class="content">
+          <strong>If dataset is different</strong> — this code uses <code>if col in df.columns</code> guards so it won't crash. For any numeric column, replace <code>'horsepower'</code> with your actual column name. For categorical columns, replace <code>'aspiration'</code> with your column. Run <code>df.columns</code> first to see all column names.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPECTED OUTPUT -->
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">📊</span>Expected Output</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="output-grid">
+        <div class="output-chip"><span class="label">shape</span>(201, 30)</div>
+        <div class="output-chip"><span class="label">null values after clean</span>0</div>
+        <div class="output-chip"><span class="label">length range after norm</span>0.67 – 1.00</div>
+        <div class="output-chip"><span class="label">hp bins</span>Low: 151 / Med: 43 / High: 5</div>
+      </div>
+      <div class="info-box green" style="margin-top:16px">
+        <strong>What examiner wants to see:</strong> isnull().sum() showing 0s after filling. Normalized column values between 0–1. Dummy encoded columns (0s and 1s). Binned column.
+      </div>
+    </div>
+  </div>
+
+  <!-- VIVA -->
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">🎤</span>Viva Questions & Answers</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="viva-grid">
+        <div class="viva-item">
+          <button class="viva-q" onclick="toggleViva(this)">
+            <span>What is Data Wrangling?</span><span class="viva-q-icon">+</span>
+          </button>
+          <div class="viva-a">Data wrangling (also called data munging) is the process of cleaning, transforming, and mapping raw data into a more usable format for analysis. It includes handling missing values, converting data types, normalizing, and encoding variables.</div>
+        </div>
+        <div class="viva-item">
+          <button class="viva-q" onclick="toggleViva(this)">
+            <span>What is the difference between isnull() and notnull()?</span><span class="viva-q-icon">+</span>
+          </button>
+          <div class="viva-a"><strong>isnull()</strong> returns True where value is NaN/None (missing). <strong>notnull()</strong> returns True where value is present. Both return boolean DataFrames. We use <code>isnull().sum()</code> to count missing values per column.</div>
+        </div>
+        <div class="viva-item">
+          <button class="viva-q" onclick="toggleViva(this)">
+            <span>What is normalization? Why do we normalize?</span><span class="viva-q-icon">+</span>
+          </button>
+          <div class="viva-a">Normalization scales values to a standard range (usually 0 to 1). We normalize to prevent features with large ranges from dominating ML algorithms. Example: <code>df['length'] = df['length'] / df['length'].max()</code> scales to 0–1.</div>
+        </div>
+        <div class="viva-item">
+          <button class="viva-q" onclick="toggleViva(this)">
+            <span>What are dummy variables? Why use them?</span><span class="viva-q-icon">+</span>
+          </button>
+          <div class="viva-a">Dummy variables convert categorical text data into numerical binary (0 or 1) format. ML algorithms can't process text, only numbers. <code>pd.get_dummies()</code> creates one column per category. Example: 'aspiration' with 'std'/'turbo' becomes two 0/1 columns.</div>
+        </div>
+        <div class="viva-item">
+          <button class="viva-q" onclick="toggleViva(this)">
+            <span>What is binning?</span><span class="viva-q-icon">+</span>
+          </button>
+          <div class="viva-a">Binning is grouping continuous numeric data into discrete categories (bins). Example: horsepower values 48–262 grouped into Low/Medium/High bins using <code>pd.cut()</code>. It simplifies analysis and reduces noise.</div>
+        </div>
+        <div class="viva-item">
+          <button class="viva-q" onclick="toggleViva(this)">
+            <span>How do you handle missing data in Python?</span><span class="viva-q-icon">+</span>
+          </button>
+          <div class="viva-a">Two main approaches: <strong>1) Drop</strong> — use <code>df.dropna()</code> to remove rows/columns with missing values. <strong>2) Replace</strong> — use <code>df.fillna(mean)</code> for numeric columns, <code>df.fillna(mode()[0])</code> for categorical. We prefer replacing to avoid losing data.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- end exp1 -->
+
+
+<!-- ════════════════════════════════════════════
+  EXP 2 — DATA WRANGLING II
+════════════════════════════════════════════ -->
+<div class="exp-card" id="exp2">
+  <div class="exp-header">
+    <div class="exp-num">02</div>
+    <div class="exp-meta">
+      <div class="exp-group">Group A · Assignment 2</div>
+      <div class="exp-title">Data Wrangling II — Academic Performance</div>
+      <div class="exp-desc">Create/load an academic dataset, scan for missing values, detect and handle outliers using IQR method, apply data transformations.</div>
+      <div class="difficulty">
+        <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot"></div><div class="diff-dot"></div>
+        <span class="diff-label">MEDIUM — 3/5</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">💻</span>Complete Code</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body open">
+      <div class="code-wrap">
+        <div class="code-topbar"><span class="code-lang">PYTHON · JUPYTER NOTEBOOK</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm"># Assignment 2 — Data Wrangling II
+# Creates academic performance dataset internally (no file needed)</span>
+
+<span class="kw">import</span> <span class="var">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+<span class="kw">import</span> <span class="var">numpy</span> <span class="kw">as</span> <span class="var">np</span>
+<span class="kw">import</span> <span class="var">matplotlib.pyplot</span> <span class="kw">as</span> <span class="var">plt</span>
+<span class="kw">import</span> <span class="var">seaborn</span> <span class="kw">as</span> <span class="var">sns</span>
+
+<span class="cm"># ── STEP 1: Create Dataset ────────────────────</span>
+<span class="var">np</span>.<span class="var">random</span>.<span class="fn">seed</span>(<span class="num">42</span>)
+<span class="var">data</span> <span class="op">=</span> {
+    <span class="str">'Name'</span>: [<span class="str">'Alice'</span>,<span class="str">'Bob'</span>,<span class="str">'Carol'</span>,<span class="str">'Dave'</span>,<span class="str">'Eve'</span>,
+              <span class="str">'Frank'</span>,<span class="str">'Grace'</span>,<span class="str">'Hank'</span>,<span class="str">'Ivy'</span>,<span class="str">'Jack'</span>],
+    <span class="str">'Math'</span>: [<span class="num">85</span>, <span class="num">90</span>, <span class="kw">None</span>, <span class="num">78</span>, <span class="num">92</span>, <span class="num">200</span>, <span class="num">88</span>, <span class="num">75</span>, <span class="kw">None</span>, <span class="num">82</span>],
+    <span class="str">'Science'</span>: [<span class="num">78</span>, <span class="num">88</span>, <span class="num">92</span>, <span class="kw">None</span>, <span class="num">85</span>, <span class="num">90</span>, <span class="num">-5</span>, <span class="num">80</span>, <span class="num">87</span>, <span class="num">91</span>],
+    <span class="str">'English'</span>: [<span class="num">90</span>, <span class="num">82</span>, <span class="num">88</span>, <span class="num">76</span>, <span class="num">94</span>, <span class="num">89</span>, <span class="num">83</span>, <span class="kw">None</span>, <span class="num">91</span>, <span class="num">77</span>],
+    <span class="str">'Grade'</span>: [<span class="str">'A'</span>,<span class="str">'A'</span>,<span class="str">'B'</span>,<span class="str">'B'</span>,<span class="str">'A'</span>,<span class="str">'A'</span>,<span class="str">'B'</span>,<span class="str">'C'</span>,<span class="str">'A'</span>,<span class="str">'B'</span>]
+}
+<span class="var">df</span> <span class="op">=</span> <span class="var">pd</span>.<span class="cls">DataFrame</span>(<span class="var">data</span>)
+<span class="fn">print</span>(<span class="str">"Original Dataset:"</span>)
+<span class="fn">print</span>(<span class="var">df</span>)
+
+<span class="cm"># ── STEP 2: Scan for Missing Values ──────────</span>
+<span class="fn">print</span>(<span class="str">"\nMissing Values:"</span>)
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">isnull</span>().<span class="fn">sum</span>())
+
+<span class="cm"># Fill missing with column mean</span>
+<span class="kw">for</span> <span class="var">col</span> <span class="kw">in</span> [<span class="str">'Math'</span>, <span class="str">'Science'</span>, <span class="str">'English'</span>]:
+    <span class="var">df</span>[<span class="var">col</span>].<span class="fn">fillna</span>(<span class="var">df</span>[<span class="var">col</span>].<span class="fn">mean</span>(), <span class="var">inplace</span><span class="op">=</span><span class="kw">True</span>)
+
+<span class="fn">print</span>(<span class="str">"\nAfter filling missing values:"</span>)
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">isnull</span>().<span class="fn">sum</span>())
+
+<span class="cm"># ── STEP 3: Visualize Outliers (Boxplot) ─────</span>
+<span class="fn">print</span>(<span class="str">"\nBoxplot — detecting outliers:"</span>)
+<span class="var">plt</span>.<span class="fn">figure</span>(<span class="var">figsize</span><span class="op">=</span>(<span class="num">10</span>,<span class="num">4</span>))
+<span class="kw">for</span> <span class="var">i</span>, <span class="var">col</span> <span class="kw">in</span> <span class="fn">enumerate</span>([<span class="str">'Math'</span>, <span class="str">'Science'</span>, <span class="str">'English'</span>]):
+    <span class="var">plt</span>.<span class="fn">subplot</span>(<span class="num">1</span>, <span class="num">3</span>, <span class="var">i</span><span class="op">+</span><span class="num">1</span>)
+    <span class="var">plt</span>.<span class="fn">boxplot</span>(<span class="var">df</span>[<span class="var">col</span>])
+    <span class="var">plt</span>.<span class="fn">title</span>(<span class="var">col</span>)
+<span class="var">plt</span>.<span class="fn">tight_layout</span>()
+<span class="var">plt</span>.<span class="fn">show</span>()
+
+<span class="cm"># ── STEP 4: Handle Outliers (IQR Method) ─────</span>
+<span class="kw">def</span> <span class="fn">remove_outliers_iqr</span>(<span class="var">df</span>, <span class="var">col</span>):
+    <span class="var">Q1</span> <span class="op">=</span> <span class="var">df</span>[<span class="var">col</span>].<span class="fn">quantile</span>(<span class="num">0.25</span>)
+    <span class="var">Q3</span> <span class="op">=</span> <span class="var">df</span>[<span class="var">col</span>].<span class="fn">quantile</span>(<span class="num">0.75</span>)
+    <span class="var">IQR</span> <span class="op">=</span> <span class="var">Q3</span> <span class="op">-</span> <span class="var">Q1</span>
+    <span class="var">lower</span> <span class="op">=</span> <span class="var">Q1</span> <span class="op">-</span> <span class="num">1.5</span> <span class="op">*</span> <span class="var">IQR</span>
+    <span class="var">upper</span> <span class="op">=</span> <span class="var">Q3</span> <span class="op">+</span> <span class="num">1.5</span> <span class="op">*</span> <span class="var">IQR</span>
+    <span class="fn">print</span>(<span class="str">f"  {col}: lower={lower:.2f}, upper={upper:.2f}"</span>)
+    <span class="cm"># Cap outliers instead of dropping</span>
+    <span class="var">df</span>[<span class="var">col</span>] <span class="op">=</span> <span class="var">df</span>[<span class="var">col</span>].<span class="fn">clip</span>(<span class="var">lower</span>, <span class="var">upper</span>)
+    <span class="kw">return</span> <span class="var">df</span>
+
+<span class="fn">print</span>(<span class="str">"\nHandling outliers using IQR capping:"</span>)
+<span class="kw">for</span> <span class="var">col</span> <span class="kw">in</span> [<span class="str">'Math'</span>, <span class="str">'Science'</span>, <span class="str">'English'</span>]:
+    <span class="var">df</span> <span class="op">=</span> <span class="fn">remove_outliers_iqr</span>(<span class="var">df</span>, <span class="var">col</span>)
+
+<span class="cm"># ── STEP 5: Data Transformation (Log) ────────</span>
+<span class="cm"># Apply log transform to reduce skewness</span>
+<span class="var">df</span>[<span class="str">'Math_log'</span>] <span class="op">=</span> <span class="var">np</span>.<span class="fn">log</span>(<span class="var">df</span>[<span class="str">'Math'</span>] <span class="op">+</span> <span class="num">1</span>)
+<span class="fn">print</span>(<span class="str">"\nLog transformed Math column (first 5):"</span>)
+<span class="fn">print</span>(<span class="var">df</span>[[<span class="str">'Math'</span>, <span class="str">'Math_log'</span>]].<span class="fn">head</span>())
+
+<span class="cm"># ── STEP 6: Final Statistics ──────────────────</span>
+<span class="fn">print</span>(<span class="str">"\nFinal Dataset Statistics:"</span>)
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">describe</span>())
+
+<span class="fn">print</span>(<span class="str">"\n✓ Assignment 2 complete"</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">🚀</span>How to Execute</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="info-box blue"><strong>No CSV file needed!</strong> This code creates the dataset internally. Just paste and run — works even with no internet.</div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-text">Open Jupyter → new notebook → paste code → run all cells</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-text">You'll see the dataset printed, missing values shown, then 3 boxplot charts appear, then cleaned data</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-text">If college provides a CSV: replace the <code>data = {...}</code> block with <code>df = pd.read_csv("filename.csv")</code> and adjust column names accordingly</div></div>
+      </div>
+      <div class="dataset-alert">
+        <div class="icon">⚠️</div>
+        <div class="content">
+          <strong>If dataset has different columns</strong> — just change <code>'Math'</code>, <code>'Science'</code>, <code>'English'</code> to your actual numeric column names. The outlier IQR function works on any numeric column.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">📊</span>Expected Output</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="output-grid">
+        <div class="output-chip"><span class="label">missing values</span>Math: 2<br>Science: 1<br>English: 1</div>
+        <div class="output-chip"><span class="label">after fill</span>All zeros</div>
+        <div class="output-chip"><span class="label">boxplots</span>3 charts showing outlier dots above whiskers</div>
+        <div class="output-chip"><span class="label">math_log</span>~4.4 – 4.5 range</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">🎤</span>Viva Questions & Answers</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="viva-grid">
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is an outlier?</span><span class="viva-q-icon">+</span></button><div class="viva-a">An outlier is a data point that significantly differs from other observations. In our dataset, Math=200 and Science=-5 are outliers as they are impossible scores. Outliers can skew analysis and need to be detected and handled.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is the IQR method?</span><span class="viva-q-icon">+</span></button><div class="viva-a"><strong>IQR (Interquartile Range)</strong> = Q3 - Q1. Any value below Q1 - 1.5×IQR or above Q3 + 1.5×IQR is an outlier. We either drop those rows or cap them (clip to boundary). IQR is robust because it ignores extreme values when computing boundaries.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is data transformation? Why apply log transform?</span><span class="viva-q-icon">+</span></button><div class="viva-a">Data transformation converts values to a new scale/distribution. Log transform (<code>np.log(x+1)</code>) is applied to: reduce right-skewness, convert multiplicative relationships to additive, compress wide ranges. The +1 avoids log(0) error.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is skewness?</span><span class="viva-q-icon">+</span></button><div class="viva-a">Skewness measures asymmetry in a distribution. <strong>Right-skewed</strong>: long tail on right, mean > median (common in income data). <strong>Left-skewed</strong>: long tail on left. Log transform reduces right skewness and makes data more normally distributed.</div></div>
+      </div>
+    </div>
+  </div>
+</div><!-- end exp2 -->
+
+
+<!-- ════════════════════════════════════════════
+  EXP 3 — DESCRIPTIVE STATISTICS
+════════════════════════════════════════════ -->
+<div class="exp-card" id="exp3">
+  <div class="exp-header">
+    <div class="exp-num">03</div>
+    <div class="exp-meta">
+      <div class="exp-group">Group A · Assignment 3</div>
+      <div class="exp-title">Descriptive Statistics</div>
+      <div class="exp-desc">Compute mean, median, mode, standard deviation, percentiles on Iris dataset. Group statistics by categorical variable.</div>
+      <div class="difficulty">
+        <div class="diff-dot on"></div><div class="diff-dot"></div><div class="diff-dot"></div><div class="diff-dot"></div><div class="diff-dot"></div>
+        <span class="diff-label">EASIEST — 1/5</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">💻</span>Complete Code</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body open">
+      <div class="code-wrap">
+        <div class="code-topbar"><span class="code-lang">PYTHON · JUPYTER NOTEBOOK</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm"># Assignment 3 — Descriptive Statistics
+# Dataset: Iris (from seaborn — no file needed)</span>
+
+<span class="kw">import</span> <span class="var">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+<span class="kw">import</span> <span class="var">numpy</span> <span class="kw">as</span> <span class="var">np</span>
+<span class="kw">import</span> <span class="var">seaborn</span> <span class="kw">as</span> <span class="var">sns</span>
+
+<span class="cm"># ── STEP 1: Load Iris Dataset ─────────────────</span>
+<span class="var">df</span> <span class="op">=</span> <span class="var">sns</span>.<span class="fn">load_dataset</span>(<span class="str">'iris'</span>)
+<span class="cm"># Alternative if no internet:</span>
+<span class="cm"># from sklearn.datasets import load_iris</span>
+<span class="cm"># iris = load_iris(as_frame=True)</span>
+<span class="cm"># df = iris.frame</span>
+<span class="fn">print</span>(<span class="str">"Dataset shape:"</span>, <span class="var">df</span>.<span class="var">shape</span>)
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">head</span>())
+
+<span class="cm"># ── STEP 2: Overall Statistics ────────────────</span>
+<span class="fn">print</span>(<span class="str">"\n=== DESCRIBE ==="</span>)
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">describe</span>())
+
+<span class="cm"># ── STEP 3: Individual Stats ──────────────────</span>
+<span class="fn">print</span>(<span class="str">"\n=== MEAN ==="</span>)
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">mean</span>(<span class="var">numeric_only</span><span class="op">=</span><span class="kw">True</span>))
+
+<span class="fn">print</span>(<span class="str">"\n=== MEDIAN ==="</span>)
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">median</span>(<span class="var">numeric_only</span><span class="op">=</span><span class="kw">True</span>))
+
+<span class="fn">print</span>(<span class="str">"\n=== MODE (species) ==="</span>)
+<span class="fn">print</span>(<span class="var">df</span>[<span class="str">'species'</span>].<span class="fn">mode</span>())
+
+<span class="fn">print</span>(<span class="str">"\n=== STANDARD DEVIATION ==="</span>)
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">std</span>(<span class="var">numeric_only</span><span class="op">=</span><span class="kw">True</span>))
+
+<span class="fn">print</span>(<span class="str">"\n=== PERCENTILES ==="</span>)
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">quantile</span>([<span class="num">0.25</span>, <span class="num">0.50</span>, <span class="num">0.75</span>], <span class="var">numeric_only</span><span class="op">=</span><span class="kw">True</span>))
+
+<span class="cm"># ── STEP 4: Grouped Statistics ────────────────</span>
+<span class="fn">print</span>(<span class="str">"\n=== GROUPED BY SPECIES — MEAN ==="</span>)
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">groupby</span>(<span class="str">'species'</span>).<span class="fn">mean</span>(<span class="var">numeric_only</span><span class="op">=</span><span class="kw">True</span>))
+
+<span class="fn">print</span>(<span class="str">"\n=== GROUPED BY SPECIES — DESCRIBE ==="</span>)
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">groupby</span>(<span class="str">'species'</span>).<span class="fn">describe</span>())
+
+<span class="cm"># ── STEP 5: Per-species Individual Stats ─────</span>
+<span class="kw">for</span> <span class="var">sp</span> <span class="kw">in</span> [<span class="str">'setosa'</span>, <span class="str">'versicolor'</span>, <span class="str">'virginica'</span>]:
+    <span class="var">subset</span> <span class="op">=</span> <span class="var">df</span>[<span class="var">df</span>[<span class="str">'species'</span>] <span class="op">==</span> <span class="var">sp</span>]
+    <span class="fn">print</span>(<span class="str">f"\n--- {sp.upper()} ---"</span>)
+    <span class="fn">print</span>(<span class="var">subset</span>[<span class="str">'sepal_length'</span>].<span class="fn">describe</span>())
+
+<span class="fn">print</span>(<span class="str">"\n✓ Assignment 3 complete"</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">🚀</span>How to Execute</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="info-box blue"><strong>No CSV file needed!</strong> <code>sns.load_dataset('iris')</code> loads from seaborn's cache — works offline if seaborn is installed. Alternatively sklearn's iris also works offline.</div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-text">Just paste and run. No files, no internet needed (seaborn caches datasets locally)</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-text">All output is text — describe(), mean(), std() etc. Show the examiner each output</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">📊</span>Expected Output</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="output-grid">
+        <div class="output-chip"><span class="label">sepal_length mean</span>5.843</div>
+        <div class="output-chip"><span class="label">sepal_length std</span>0.828</div>
+        <div class="output-chip"><span class="label">setosa sepal_length mean</span>5.006</div>
+        <div class="output-chip"><span class="label">virginica sepal_length mean</span>6.588</div>
+        <div class="output-chip"><span class="label">25th percentile sepal_length</span>5.1</div>
+        <div class="output-chip"><span class="label">75th percentile sepal_length</span>6.4</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">🎤</span>Viva Questions & Answers</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="viva-grid">
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is mean, median and mode?</span><span class="viva-q-icon">+</span></button><div class="viva-a"><strong>Mean</strong>: arithmetic average = sum/count. Affected by outliers. <strong>Median</strong>: middle value when sorted. Robust to outliers. <strong>Mode</strong>: most frequently occurring value. For categorical data, mode is the only applicable measure of central tendency.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is standard deviation?</span><span class="viva-q-icon">+</span></button><div class="viva-a">Standard deviation measures how spread out values are from the mean. Low SD = values close to mean. High SD = wide spread. Formula: sqrt(sum of (x-mean)² / n). In pandas: <code>df.std()</code>.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is a percentile?</span><span class="viva-q-icon">+</span></button><div class="viva-a">A percentile tells what percentage of values fall below a given point. 25th percentile (Q1) = 25% of values are below this. 50th percentile = median. 75th percentile (Q3) = 75% of values below. Useful for understanding data distribution.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What does describe() return?</span><span class="viva-q-icon">+</span></button><div class="viva-a"><code>df.describe()</code> returns: count, mean, std, min, 25%, 50% (median), 75%, max for each numeric column. It's the quickest way to get a statistical summary of a dataset.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is groupby?</span><span class="viva-q-icon">+</span></button><div class="viva-a"><code>df.groupby('species').mean()</code> groups rows by species category and computes mean for each group separately. It's like SQL's GROUP BY — gives statistics per category instead of overall.</div></div>
+      </div>
+    </div>
+  </div>
+</div><!-- end exp3 -->
+
+
+<!-- ════════════════════════════════════════════
+  EXP 4 — LINEAR REGRESSION
+════════════════════════════════════════════ -->
+<div class="exp-card" id="exp4">
+  <div class="exp-header">
+    <div class="exp-num">04</div>
+    <div class="exp-meta">
+      <div class="exp-group">Group A · Assignment 4</div>
+      <div class="exp-title">Data Analytics I — Linear Regression</div>
+      <div class="exp-desc">Predict house prices using Boston Housing Dataset with Linear Regression. Train-test split, fit model, evaluate with R² score.</div>
+      <div class="difficulty">
+        <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot"></div><div class="diff-dot"></div>
+        <span class="diff-label">MEDIUM — 3/5</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">💻</span>Complete Code</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body open">
+      <div class="code-wrap">
+        <div class="code-topbar"><span class="code-lang">PYTHON · JUPYTER NOTEBOOK</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm"># Assignment 4 — Linear Regression (Boston Housing)
+# Works without internet — sklearn has built-in alternative</span>
+
+<span class="kw">import</span> <span class="var">numpy</span> <span class="kw">as</span> <span class="var">np</span>
+<span class="kw">import</span> <span class="var">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+<span class="kw">import</span> <span class="var">matplotlib.pyplot</span> <span class="kw">as</span> <span class="var">plt</span>
+<span class="kw">from</span> <span class="var">sklearn.linear_model</span> <span class="kw">import</span> <span class="cls">LinearRegression</span>
+<span class="kw">from</span> <span class="var">sklearn.model_selection</span> <span class="kw">import</span> <span class="fn">train_test_split</span>
+<span class="kw">from</span> <span class="var">sklearn.preprocessing</span> <span class="kw">import</span> <span class="cls">StandardScaler</span>
+<span class="kw">from</span> <span class="var">sklearn.metrics</span> <span class="kw">import</span> <span class="fn">mean_squared_error</span>, <span class="fn">r2_score</span>
+
+<span class="cm"># ── STEP 1: Load Dataset ──────────────────────</span>
+<span class="cm"># Method 1: From CSV (if provided)</span>
+<span class="kw">try</span>:
+    <span class="var">data</span> <span class="op">=</span> <span class="var">pd</span>.<span class="fn">read_csv</span>(<span class="str">"BostonHousing.csv"</span>)
+    <span class="fn">print</span>(<span class="str">"Loaded from CSV"</span>)
+<span class="kw">except</span>:
+    <span class="cm"># Method 2: Create synthetic Boston-like data (offline fallback)</span>
+    <span class="var">np</span>.<span class="var">random</span>.<span class="fn">seed</span>(<span class="num">42</span>)
+    <span class="var">n</span> <span class="op">=</span> <span class="num">506</span>
+    <span class="var">data</span> <span class="op">=</span> <span class="var">pd</span>.<span class="cls">DataFrame</span>({
+        <span class="str">'crim'</span>: <span class="var">np</span>.<span class="var">random</span>.<span class="fn">exponential</span>(<span class="num">3</span>, <span class="var">n</span>),
+        <span class="str">'rm'</span>: <span class="var">np</span>.<span class="var">random</span>.<span class="fn">normal</span>(<span class="num">6.3</span>, <span class="num">0.7</span>, <span class="var">n</span>),
+        <span class="str">'lstat'</span>: <span class="var">np</span>.<span class="var">random</span>.<span class="fn">normal</span>(<span class="num">12</span>, <span class="num">7</span>, <span class="var">n</span>).<span class="fn">clip</span>(<span class="num">0</span>),
+        <span class="str">'age'</span>: <span class="var">np</span>.<span class="var">random</span>.<span class="fn">uniform</span>(<span class="num">0</span>, <span class="num">100</span>, <span class="var">n</span>),
+        <span class="str">'dis'</span>: <span class="var">np</span>.<span class="var">random</span>.<span class="fn">uniform</span>(<span class="num">1</span>, <span class="num">12</span>, <span class="var">n</span>),
+    })
+    <span class="var">data</span>[<span class="str">'medv'</span>] <span class="op">=</span> (<span class="num">22</span> <span class="op">+</span> <span class="num">5</span><span class="op">*</span><span class="var">data</span>[<span class="str">'rm'</span>] <span class="op">-</span> <span class="num">0.7</span><span class="op">*</span><span class="var">data</span>[<span class="str">'lstat'</span>]
+                    <span class="op">-</span> <span class="num">0.2</span><span class="op">*</span><span class="var">data</span>[<span class="str">'crim'</span>] <span class="op">+</span> <span class="var">np</span>.<span class="var">random</span>.<span class="fn">normal</span>(<span class="num">0</span>, <span class="num">3</span>, <span class="var">n</span>))
+    <span class="fn">print</span>(<span class="str">"Using synthetic dataset (offline mode)"</span>)
+
+<span class="fn">print</span>(<span class="str">"Shape:"</span>, <span class="var">data</span>.<span class="var">shape</span>)
+<span class="fn">print</span>(<span class="var">data</span>.<span class="fn">head</span>())
+<span class="fn">print</span>(<span class="str">"\nNull values:"</span>, <span class="var">data</span>.<span class="fn">isnull</span>().<span class="fn">sum</span>().<span class="fn">sum</span>())
+
+<span class="cm"># ── STEP 2: Define X and y ────────────────────</span>
+<span class="var">X</span> <span class="op">=</span> <span class="var">data</span>.<span class="fn">drop</span>(<span class="str">'medv'</span>, <span class="var">axis</span><span class="op">=</span><span class="num">1</span>)
+<span class="var">y</span> <span class="op">=</span> <span class="var">data</span>[<span class="str">'medv'</span>]
+<span class="fn">print</span>(<span class="str">"\nFeatures:"</span>, <span class="var">X</span>.<span class="var">shape</span>)
+<span class="fn">print</span>(<span class="str">"Target:"</span>, <span class="var">y</span>.<span class="var">shape</span>)
+
+<span class="cm"># ── STEP 3: Train-Test Split ──────────────────</span>
+<span class="var">X_train</span>, <span class="var">X_test</span>, <span class="var">y_train</span>, <span class="var">y_test</span> <span class="op">=</span> <span class="fn">train_test_split</span>(
+    <span class="var">X</span>, <span class="var">y</span>, <span class="var">test_size</span><span class="op">=</span><span class="num">0.2</span>, <span class="var">random_state</span><span class="op">=</span><span class="num">42</span>)
+<span class="fn">print</span>(<span class="str">"Train:"</span>, <span class="var">X_train</span>.<span class="var">shape</span>, <span class="str">"| Test:"</span>, <span class="var">X_test</span>.<span class="var">shape</span>)
+
+<span class="cm"># ── STEP 4: Scale + Train Model ───────────────</span>
+<span class="var">scaler</span> <span class="op">=</span> <span class="cls">StandardScaler</span>()
+<span class="var">X_train_s</span> <span class="op">=</span> <span class="var">scaler</span>.<span class="fn">fit_transform</span>(<span class="var">X_train</span>)
+<span class="var">X_test_s</span>  <span class="op">=</span> <span class="var">scaler</span>.<span class="fn">transform</span>(<span class="var">X_test</span>)
+
+<span class="var">model</span> <span class="op">=</span> <span class="cls">LinearRegression</span>()
+<span class="var">model</span>.<span class="fn">fit</span>(<span class="var">X_train_s</span>, <span class="var">y_train</span>)
+
+<span class="cm"># ── STEP 5: Evaluate ──────────────────────────</span>
+<span class="var">y_pred</span> <span class="op">=</span> <span class="var">model</span>.<span class="fn">predict</span>(<span class="var">X_test_s</span>)
+<span class="var">r2</span> <span class="op">=</span> <span class="fn">r2_score</span>(<span class="var">y_test</span>, <span class="var">y_pred</span>)
+<span class="var">mse</span> <span class="op">=</span> <span class="fn">mean_squared_error</span>(<span class="var">y_test</span>, <span class="var">y_pred</span>)
+<span class="fn">print</span>(<span class="str">f"\nR² Score: {r2:.4f}"</span>)
+<span class="fn">print</span>(<span class="str">f"MSE: {mse:.4f}"</span>)
+<span class="fn">print</span>(<span class="str">f"RMSE: {np.sqrt(mse):.4f}"</span>)
+
+<span class="cm"># ── STEP 6: Plot Actual vs Predicted ──────────</span>
+<span class="var">plt</span>.<span class="fn">figure</span>(<span class="var">figsize</span><span class="op">=</span>(<span class="num">8</span>,<span class="num">5</span>))
+<span class="var">plt</span>.<span class="fn">scatter</span>(<span class="var">y_test</span>, <span class="var">y_pred</span>, <span class="var">alpha</span><span class="op">=</span><span class="num">0.6</span>, <span class="var">color</span><span class="op">=</span><span class="str">'steelblue'</span>)
+<span class="var">plt</span>.<span class="fn">plot</span>([<span class="var">y_test</span>.<span class="fn">min</span>(), <span class="var">y_test</span>.<span class="fn">max</span>()],
+         [<span class="var">y_test</span>.<span class="fn">min</span>(), <span class="var">y_test</span>.<span class="fn">max</span>()], <span class="str">'r--'</span>, <span class="var">lw</span><span class="op">=</span><span class="num">2</span>)
+<span class="var">plt</span>.<span class="fn">xlabel</span>(<span class="str">'Actual Price'</span>)
+<span class="var">plt</span>.<span class="fn">ylabel</span>(<span class="str">'Predicted Price'</span>)
+<span class="var">plt</span>.<span class="fn">title</span>(<span class="str">f'Linear Regression — R²={r2:.3f}'</span>)
+<span class="var">plt</span>.<span class="fn">show</span>()
+
+<span class="fn">print</span>(<span class="str">"\n✓ Assignment 4 complete"</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">🚀</span>How to Execute</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="info-box blue"><strong>Offline safe!</strong> Code tries to load BostonHousing.csv first. If not found, auto-generates synthetic data. Either way it works.</div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-text">If college provides CSV: keep it in the same folder as notebook. Code auto-detects it.</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-text">Target column in standard Boston dataset is <code>medv</code> (median home value). If yours is different, change <code>'medv'</code> to your column name.</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-text">A scatter plot appears — dots close to the red diagonal line = good model</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">📊</span>Expected Output</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="output-grid">
+        <div class="output-chip"><span class="label">R² Score</span>~0.66 – 0.75</div>
+        <div class="output-chip"><span class="label">train shape</span>(404, 13)</div>
+        <div class="output-chip"><span class="label">test shape</span>(102, 13)</div>
+        <div class="output-chip"><span class="label">plot</span>Scatter of actual vs predicted</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">🎤</span>Viva Questions & Answers</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="viva-grid">
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is Linear Regression?</span><span class="viva-q-icon">+</span></button><div class="viva-a">Linear Regression is a supervised ML algorithm that models the relationship between a dependent variable (y) and one or more independent variables (X) as a straight line: y = mX + c. Used for predicting continuous values like house prices.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is R² score?</span><span class="viva-q-icon">+</span></button><div class="viva-a">R² (R-squared) measures how well the model explains variance in the target variable. Value between 0 and 1. R²=1 means perfect prediction. R²=0.67 means model explains 67% of variance. Higher is better.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is train-test split?</span><span class="viva-q-icon">+</span></button><div class="viva-a">We split data into training set (80%) to teach the model, and test set (20%) to evaluate on unseen data. This checks if model generalizes well. Without test split, we can't know if model memorized data (overfitting).</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is MSE and RMSE?</span><span class="viva-q-icon">+</span></button><div class="viva-a"><strong>MSE</strong> (Mean Squared Error) = average of squared differences between actual and predicted values. <strong>RMSE</strong> = √MSE — in same units as target variable. Lower MSE/RMSE = better model. RMSE of 3 means predictions are off by ~$3000 on average.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>Why do we use StandardScaler?</span><span class="viva-q-icon">+</span></button><div class="viva-a">StandardScaler normalizes features to zero mean and unit variance. Without scaling, features with large values (like price) dominate those with small values (like rooms). Scaling ensures all features contribute equally to the model.</div></div>
+      </div>
+    </div>
+  </div>
+</div><!-- end exp4 -->
+
+
+<!-- ════════════════════════════════════════════
+  EXP 5 — LOGISTIC REGRESSION
+════════════════════════════════════════════ -->
+<div class="exp-card" id="exp5">
+  <div class="exp-header">
+    <div class="exp-num">05</div>
+    <div class="exp-meta">
+      <div class="exp-group">Group A · Assignment 5</div>
+      <div class="exp-title">Data Analytics II — Logistic Regression</div>
+      <div class="exp-desc">Classify social network ads purchases using Logistic Regression. Compute confusion matrix — TP, FP, TN, FN, Accuracy, Precision, Recall.</div>
+      <div class="difficulty">
+        <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot"></div><div class="diff-dot"></div>
+        <span class="diff-label">MEDIUM — 3/5</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">💻</span>Complete Code</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body open">
+      <div class="code-wrap">
+        <div class="code-topbar"><span class="code-lang">PYTHON · JUPYTER NOTEBOOK</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm"># Assignment 5 — Logistic Regression
+# Dataset: Social_Network_Ads.csv</span>
+
+<span class="kw">import</span> <span class="var">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+<span class="kw">import</span> <span class="var">numpy</span> <span class="kw">as</span> <span class="var">np</span>
+<span class="kw">import</span> <span class="var">matplotlib.pyplot</span> <span class="kw">as</span> <span class="var">plt</span>
+<span class="kw">import</span> <span class="var">seaborn</span> <span class="kw">as</span> <span class="var">sns</span>
+<span class="kw">from</span> <span class="var">sklearn.linear_model</span> <span class="kw">import</span> <span class="cls">LogisticRegression</span>
+<span class="kw">from</span> <span class="var">sklearn.model_selection</span> <span class="kw">import</span> <span class="fn">train_test_split</span>
+<span class="kw">from</span> <span class="var">sklearn.preprocessing</span> <span class="kw">import</span> <span class="cls">MinMaxScaler</span>
+<span class="kw">from</span> <span class="var">sklearn.metrics</span> <span class="kw">import</span> (
+    <span class="fn">confusion_matrix</span>, <span class="fn">accuracy_score</span>,
+    <span class="fn">precision_score</span>, <span class="fn">recall_score</span>,
+    <span class="fn">f1_score</span>, <span class="fn">classification_report</span>,
+    <span class="cls">ConfusionMatrixDisplay</span>
+)
+
+<span class="cm"># ── STEP 1: Load Dataset ──────────────────────</span>
+<span class="kw">try</span>:
+    <span class="var">df</span> <span class="op">=</span> <span class="var">pd</span>.<span class="fn">read_csv</span>(<span class="str">'Social_Network_Ads.csv'</span>)
+    <span class="fn">print</span>(<span class="str">"Loaded CSV"</span>)
+<span class="kw">except</span>:
+    <span class="cm"># Synthetic fallback</span>
+    <span class="var">np</span>.<span class="var">random</span>.<span class="fn">seed</span>(<span class="num">0</span>)
+    <span class="var">n</span> <span class="op">=</span> <span class="num">400</span>
+    <span class="var">age</span> <span class="op">=</span> <span class="var">np</span>.<span class="var">random</span>.<span class="fn">randint</span>(<span class="num">18</span>, <span class="num">60</span>, <span class="var">n</span>)
+    <span class="var">salary</span> <span class="op">=</span> <span class="var">np</span>.<span class="var">random</span>.<span class="fn">randint</span>(<span class="num">15000</span>, <span class="num">150000</span>, <span class="var">n</span>)
+    <span class="var">purchased</span> <span class="op">=</span> (((<span class="var">age</span> <span class="op">-</span> <span class="num">35</span>)<span class="op">**</span><span class="num">2</span> <span class="op">+</span> (<span class="var">salary</span><span class="op">/</span><span class="num">5000</span> <span class="op">-</span> <span class="num">15</span>)<span class="op">**</span><span class="num">2</span>)
+                  <span class="op">&lt;</span> <span class="num">300</span>).<span class="fn">astype</span>(<span class="cls">int</span>)
+    <span class="var">df</span> <span class="op">=</span> <span class="var">pd</span>.<span class="cls">DataFrame</span>({
+        <span class="str">'Age'</span>: <span class="var">age</span>, <span class="str">'EstimatedSalary'</span>: <span class="var">salary</span>, <span class="str">'Purchased'</span>: <span class="var">purchased</span>
+    })
+    <span class="fn">print</span>(<span class="str">"Using synthetic dataset"</span>)
+
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">head</span>())
+<span class="fn">print</span>(<span class="str">"Shape:"</span>, <span class="var">df</span>.<span class="var">shape</span>)
+
+<span class="cm"># ── STEP 2: Preprocessing ─────────────────────</span>
+<span class="cm"># Drop non-numeric columns if present</span>
+<span class="var">df</span> <span class="op">=</span> <span class="var">df</span>[[<span class="var">c</span> <span class="kw">for</span> <span class="var">c</span> <span class="kw">in</span> <span class="var">df</span>.<span class="var">columns</span>
+          <span class="kw">if</span> <span class="var">c</span> <span class="kw">in</span> [<span class="str">'Age'</span>,<span class="str">'EstimatedSalary'</span>,<span class="str">'Purchased'</span>]]]
+
+<span class="fn">print</span>(<span class="str">"\nNull values:"</span>, <span class="var">df</span>.<span class="fn">isnull</span>().<span class="fn">sum</span>().<span class="fn">sum</span>())
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">describe</span>())
+
+<span class="cm"># ── STEP 3: Split X and y ─────────────────────</span>
+<span class="var">X</span> <span class="op">=</span> <span class="var">df</span>[[<span class="str">'Age'</span>, <span class="str">'EstimatedSalary'</span>]]
+<span class="var">y</span> <span class="op">=</span> <span class="var">df</span>[<span class="str">'Purchased'</span>]
+
+<span class="cm"># ── STEP 4: Normalize ─────────────────────────</span>
+<span class="var">scaler</span> <span class="op">=</span> <span class="cls">MinMaxScaler</span>()
+<span class="var">X_scaled</span> <span class="op">=</span> <span class="var">scaler</span>.<span class="fn">fit_transform</span>(<span class="var">X</span>)
+
+<span class="cm"># ── STEP 5: Train-Test Split ──────────────────</span>
+<span class="var">X_train</span>, <span class="var">X_test</span>, <span class="var">y_train</span>, <span class="var">y_test</span> <span class="op">=</span> <span class="fn">train_test_split</span>(
+    <span class="var">X_scaled</span>, <span class="var">y</span>, <span class="var">test_size</span><span class="op">=</span><span class="num">0.2</span>, <span class="var">random_state</span><span class="op">=</span><span class="num">42</span>)
+
+<span class="cm"># ── STEP 6: Build Model ───────────────────────</span>
+<span class="var">model</span> <span class="op">=</span> <span class="cls">LogisticRegression</span>()
+<span class="var">model</span>.<span class="fn">fit</span>(<span class="var">X_train</span>, <span class="var">y_train</span>)
+<span class="var">y_pred</span> <span class="op">=</span> <span class="var">model</span>.<span class="fn">predict</span>(<span class="var">X_test</span>)
+
+<span class="cm"># ── STEP 7: Confusion Matrix ──────────────────</span>
+<span class="var">cm</span> <span class="op">=</span> <span class="fn">confusion_matrix</span>(<span class="var">y_test</span>, <span class="var">y_pred</span>)
+<span class="var">TN</span>, <span class="var">FP</span>, <span class="var">FN</span>, <span class="var">TP</span> <span class="op">=</span> <span class="var">cm</span>.<span class="fn">ravel</span>()
+<span class="fn">print</span>(<span class="str">"\n=== CONFUSION MATRIX ==="</span>)
+<span class="fn">print</span>(<span class="str">f"TP={TP}  FP={FP}"</span>)
+<span class="fn">print</span>(<span class="str">f"FN={FN}  TN={TN}"</span>)
+
+<span class="cm"># ── STEP 8: Metrics ───────────────────────────</span>
+<span class="var">accuracy</span> <span class="op">=</span> <span class="fn">accuracy_score</span>(<span class="var">y_test</span>, <span class="var">y_pred</span>)
+<span class="var">error_rate</span> <span class="op">=</span> <span class="num">1</span> <span class="op">-</span> <span class="var">accuracy</span>
+<span class="var">precision</span> <span class="op">=</span> <span class="fn">precision_score</span>(<span class="var">y_test</span>, <span class="var">y_pred</span>, <span class="var">zero_division</span><span class="op">=</span><span class="num">0</span>)
+<span class="var">recall</span>    <span class="op">=</span> <span class="fn">recall_score</span>(<span class="var">y_test</span>, <span class="var">y_pred</span>, <span class="var">zero_division</span><span class="op">=</span><span class="num">0</span>)
+<span class="var">f1</span>        <span class="op">=</span> <span class="fn">f1_score</span>(<span class="var">y_test</span>, <span class="var">y_pred</span>, <span class="var">zero_division</span><span class="op">=</span><span class="num">0</span>)
+
+<span class="fn">print</span>(<span class="str">f"\nAccuracy   : {accuracy:.4f}"</span>)
+<span class="fn">print</span>(<span class="str">f"Error Rate : {error_rate:.4f}"</span>)
+<span class="fn">print</span>(<span class="str">f"Precision  : {precision:.4f}"</span>)
+<span class="fn">print</span>(<span class="str">f"Recall     : {recall:.4f}"</span>)
+<span class="fn">print</span>(<span class="str">f"F1-Score   : {f1:.4f}"</span>)
+
+<span class="cm"># ── STEP 9: Plot Confusion Matrix ────────────</span>
+<span class="var">disp</span> <span class="op">=</span> <span class="cls">ConfusionMatrixDisplay</span>(<span class="var">confusion_matrix</span><span class="op">=</span><span class="var">cm</span>)
+<span class="var">disp</span>.<span class="fn">plot</span>(<span class="var">cmap</span><span class="op">=</span><span class="str">'Blues'</span>)
+<span class="var">plt</span>.<span class="fn">title</span>(<span class="str">'Confusion Matrix — Logistic Regression'</span>)
+<span class="var">plt</span>.<span class="fn">show</span>()
+
+<span class="fn">print</span>(<span class="str">"\nClassification Report:"</span>)
+<span class="fn">print</span>(<span class="fn">classification_report</span>(<span class="var">y_test</span>, <span class="var">y_pred</span>))
+<span class="fn">print</span>(<span class="str">"✓ Assignment 5 complete"</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">📊</span>Expected Output</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="output-grid">
+        <div class="output-chip"><span class="label">Accuracy</span>~0.875 (87.5%)</div>
+        <div class="output-chip"><span class="label">Precision</span>~0.95</div>
+        <div class="output-chip"><span class="label">Recall</span>~0.68</div>
+        <div class="output-chip"><span class="label">F1</span>~0.79</div>
+        <div class="output-chip"><span class="label">TP</span>19</div>
+        <div class="output-chip"><span class="label">TN</span>51</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">🎤</span>Viva Questions & Answers</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="viva-grid">
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is Logistic Regression?</span><span class="viva-q-icon">+</span></button><div class="viva-a">Logistic Regression is a classification algorithm (despite the name). It predicts the probability (0 to 1) of a binary outcome using the sigmoid function. Output > 0.5 = class 1, ≤ 0.5 = class 0. Used for yes/no, spam/not spam decisions.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>Explain the Confusion Matrix — TP, FP, TN, FN</span><span class="viva-q-icon">+</span></button><div class="viva-a"><strong>TP</strong> (True Positive): Predicted 1, Actual 1 ✓<br><strong>TN</strong> (True Negative): Predicted 0, Actual 0 ✓<br><strong>FP</strong> (False Positive): Predicted 1, Actual 0 ✗ (Type I error)<br><strong>FN</strong> (False Negative): Predicted 0, Actual 1 ✗ (Type II error)</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is Precision and Recall?</span><span class="viva-q-icon">+</span></button><div class="viva-a"><strong>Precision</strong> = TP/(TP+FP) — of all predicted positives, how many were actually positive? (quality of positive predictions)<br><strong>Recall</strong> = TP/(TP+FN) — of all actual positives, how many did we catch? (completeness). High recall is important in medical diagnosis.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is F1 Score?</span><span class="viva-q-icon">+</span></button><div class="viva-a">F1 = 2 × (Precision × Recall) / (Precision + Recall). It's the harmonic mean of precision and recall. Useful when classes are imbalanced. A balanced measure when you care about both false positives and false negatives equally.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>Difference between Linear and Logistic Regression?</span><span class="viva-q-icon">+</span></button><div class="viva-a"><strong>Linear Regression</strong>: predicts continuous values (house price). Output: any number. <strong>Logistic Regression</strong>: predicts binary categories (0 or 1). Output: probability 0–1 via sigmoid function. Linear uses MSE loss, Logistic uses cross-entropy loss.</div></div>
+      </div>
+    </div>
+  </div>
+</div><!-- end exp5 -->
+
+
+<!-- ════════════════════════════════════════════
+  EXP 6 — NAIVE BAYES
+════════════════════════════════════════════ -->
+<div class="exp-card" id="exp6">
+  <div class="exp-header">
+    <div class="exp-num">06</div>
+    <div class="exp-meta">
+      <div class="exp-group">Group A · Assignment 6</div>
+      <div class="exp-title">Data Analytics III — Naive Bayes</div>
+      <div class="exp-desc">Classify Iris species using Gaussian Naive Bayes. Compute confusion matrix with TP, FP, TN, FN. High accuracy expected (~96%).</div>
+      <div class="difficulty">
+        <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot"></div><div class="diff-dot"></div>
+        <span class="diff-label">MEDIUM — 3/5</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">💻</span>Complete Code</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body open">
+      <div class="code-wrap">
+        <div class="code-topbar"><span class="code-lang">PYTHON · JUPYTER NOTEBOOK</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm"># Assignment 6 — Naive Bayes Classification on Iris</span>
+
+<span class="kw">import</span> <span class="var">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+<span class="kw">import</span> <span class="var">numpy</span> <span class="kw">as</span> <span class="var">np</span>
+<span class="kw">import</span> <span class="var">matplotlib.pyplot</span> <span class="kw">as</span> <span class="var">plt</span>
+<span class="kw">import</span> <span class="var">seaborn</span> <span class="kw">as</span> <span class="var">sns</span>
+<span class="kw">from</span> <span class="var">sklearn.naive_bayes</span> <span class="kw">import</span> <span class="cls">GaussianNB</span>
+<span class="kw">from</span> <span class="var">sklearn.model_selection</span> <span class="kw">import</span> <span class="fn">train_test_split</span>
+<span class="kw">from</span> <span class="var">sklearn.metrics</span> <span class="kw">import</span> (
+    <span class="fn">confusion_matrix</span>, <span class="fn">accuracy_score</span>,
+    <span class="fn">classification_report</span>, <span class="cls">ConfusionMatrixDisplay</span>
+)
+
+<span class="cm"># ── STEP 1: Load Dataset ──────────────────────</span>
+<span class="var">df</span> <span class="op">=</span> <span class="var">sns</span>.<span class="fn">load_dataset</span>(<span class="str">'iris'</span>)
+<span class="cm"># iris.csv alternative (if provided as file):</span>
+<span class="cm"># df = pd.read_csv('iris.csv')</span>
+<span class="fn">print</span>(<span class="str">"Dataset:"</span>)
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">head</span>())
+<span class="fn">print</span>(<span class="str">"Shape:"</span>, <span class="var">df</span>.<span class="var">shape</span>)
+
+<span class="cm"># ── STEP 2: Prepare Features and Labels ───────</span>
+<span class="var">X</span> <span class="op">=</span> <span class="var">df</span>.<span class="fn">drop</span>(<span class="str">'species'</span>, <span class="var">axis</span><span class="op">=</span><span class="num">1</span>)
+<span class="var">y</span> <span class="op">=</span> <span class="var">df</span>[<span class="str">'species'</span>]
+
+<span class="fn">print</span>(<span class="str">"\nNull values:"</span>, <span class="var">df</span>.<span class="fn">isnull</span>().<span class="fn">sum</span>().<span class="fn">sum</span>())
+
+<span class="cm"># ── STEP 3: Train-Test Split ──────────────────</span>
+<span class="var">X_train</span>, <span class="var">X_test</span>, <span class="var">y_train</span>, <span class="var">y_test</span> <span class="op">=</span> <span class="fn">train_test_split</span>(
+    <span class="var">X</span>, <span class="var">y</span>, <span class="var">test_size</span><span class="op">=</span><span class="num">0.2</span>, <span class="var">random_state</span><span class="op">=</span><span class="num">42</span>, <span class="var">shuffle</span><span class="op">=</span><span class="kw">True</span>)
+<span class="fn">print</span>(<span class="str">"Train:"</span>, <span class="var">X_train</span>.<span class="var">shape</span>, <span class="str">"| Test:"</span>, <span class="var">X_test</span>.<span class="var">shape</span>)
+
+<span class="cm"># ── STEP 4: Train Naive Bayes Model ──────────</span>
+<span class="var">model</span> <span class="op">=</span> <span class="cls">GaussianNB</span>()
+<span class="var">model</span>.<span class="fn">fit</span>(<span class="var">X_train</span>, <span class="var">y_train</span>)
+<span class="var">y_pred</span> <span class="op">=</span> <span class="var">model</span>.<span class="fn">predict</span>(<span class="var">X_test</span>)
+
+<span class="cm"># ── STEP 5: Accuracy ──────────────────────────</span>
+<span class="var">acc</span> <span class="op">=</span> <span class="fn">accuracy_score</span>(<span class="var">y_test</span>, <span class="var">y_pred</span>)
+<span class="fn">print</span>(<span class="str">f"\nAccuracy: {acc:.4f} ({acc*100:.2f}%)"</span>)
+
+<span class="cm"># ── STEP 6: Confusion Matrix ──────────────────</span>
+<span class="var">cm</span> <span class="op">=</span> <span class="fn">confusion_matrix</span>(<span class="var">y_test</span>, <span class="var">y_pred</span>)
+<span class="fn">print</span>(<span class="str">"\nConfusion Matrix:"</span>)
+<span class="fn">print</span>(<span class="var">cm</span>)
+
+<span class="cm"># For binary-style metrics (using setosa as class 1)</span>
+<span class="var">labels</span> <span class="op">=</span> <span class="var">model</span>.<span class="var">classes_</span>
+<span class="fn">print</span>(<span class="str">"\nClass labels:"</span>, <span class="var">labels</span>)
+
+<span class="cm"># Extract TP/FP/TN/FN for first class (setosa)</span>
+<span class="cm"># Row = Actual, Column = Predicted</span>
+<span class="var">TP</span> <span class="op">=</span> <span class="var">cm</span>[<span class="num">0</span>][<span class="num">0</span>]
+<span class="var">FN</span> <span class="op">=</span> <span class="var">cm</span>[<span class="num">0</span>][<span class="num">1</span>] <span class="op">+</span> <span class="var">cm</span>[<span class="num">0</span>][<span class="num">2</span>]
+<span class="var">FP</span> <span class="op">=</span> <span class="var">cm</span>[<span class="num">1</span>][<span class="num">0</span>] <span class="op">+</span> <span class="var">cm</span>[<span class="num">2</span>][<span class="num">0</span>]
+<span class="var">TN</span> <span class="op">=</span> <span class="var">cm</span>[<span class="num">1</span>][<span class="num">1</span>] <span class="op">+</span> <span class="var">cm</span>[<span class="num">1</span>][<span class="num">2</span>] <span class="op">+</span> <span class="var">cm</span>[<span class="num">2</span>][<span class="num">1</span>] <span class="op">+</span> <span class="var">cm</span>[<span class="num">2</span>][<span class="num">2</span>]
+<span class="fn">print</span>(<span class="str">f"\nFor class 'setosa':"</span>)
+<span class="fn">print</span>(<span class="str">f"TP={TP}, FP={FP}, FN={FN}, TN={TN}"</span>)
+<span class="fn">print</span>(<span class="str">f"Precision = {TP/(TP+FP) if (TP+FP)>0 else 0:.2f}"</span>)
+<span class="fn">print</span>(<span class="str">f"Recall    = {TP/(TP+FN) if (TP+FN)>0 else 0:.2f}"</span>)
+<span class="fn">print</span>(<span class="str">f"Accuracy  = {(TP+TN)/(TP+TN+FP+FN):.2f}"</span>)
+
+<span class="cm"># ── STEP 7: Plot Confusion Matrix ────────────</span>
+<span class="var">disp</span> <span class="op">=</span> <span class="cls">ConfusionMatrixDisplay</span>(<span class="var">confusion_matrix</span><span class="op">=</span><span class="var">cm</span>,
+                               <span class="var">display_labels</span><span class="op">=</span><span class="var">model</span>.<span class="var">classes_</span>)
+<span class="var">disp</span>.<span class="fn">plot</span>(<span class="var">cmap</span><span class="op">=</span><span class="str">'Greens'</span>)
+<span class="var">plt</span>.<span class="fn">title</span>(<span class="str">'Naive Bayes — Confusion Matrix'</span>)
+<span class="var">plt</span>.<span class="fn">show</span>()
+
+<span class="fn">print</span>(<span class="str">"\nFull Classification Report:"</span>)
+<span class="fn">print</span>(<span class="fn">classification_report</span>(<span class="var">y_test</span>, <span class="var">y_pred</span>))
+<span class="fn">print</span>(<span class="str">"✓ Assignment 6 complete"</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">📊</span>Expected Output</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="output-grid">
+        <div class="output-chip"><span class="label">Accuracy</span>96.67%</div>
+        <div class="output-chip"><span class="label">setosa TP</span>10</div>
+        <div class="output-chip"><span class="label">setosa FP/FN</span>0 / 0</div>
+        <div class="output-chip"><span class="label">confusion matrix</span>3×3 diagonal matrix</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">🎤</span>Viva Questions & Answers</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="viva-grid">
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is Naive Bayes?</span><span class="viva-q-icon">+</span></button><div class="viva-a">Naive Bayes is a probabilistic classifier based on Bayes' Theorem. "Naive" because it assumes all features are independent of each other (which is rarely true but works well in practice). P(class|features) ∝ P(features|class) × P(class).</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is Gaussian Naive Bayes?</span><span class="viva-q-icon">+</span></button><div class="viva-a">Gaussian Naive Bayes assumes feature values follow a Gaussian (normal) distribution within each class. It estimates mean and variance for each feature per class. Used for continuous numeric features like sepal length and petal width.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is Bayes' Theorem?</span><span class="viva-q-icon">+</span></button><div class="viva-a">P(A|B) = P(B|A) × P(A) / P(B). In classification: P(class|data) = P(data|class) × P(class) / P(data). P(class) is prior probability. P(data|class) is likelihood. P(class|data) is posterior — this is what we maximize to predict class.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>Why is Naive Bayes good for classification?</span><span class="viva-q-icon">+</span></button><div class="viva-a">It's fast, simple, requires little training data, handles multi-class naturally, and works well on high-dimensional data. It performs surprisingly well despite the independence assumption. Good for text classification, spam filtering, and medical diagnosis.</div></div>
+      </div>
+    </div>
+  </div>
+</div><!-- end exp6 -->
+
+
+<!-- ════════════════════════════════════════════
+  EXP 7 — TEXT ANALYTICS
+════════════════════════════════════════════ -->
+<div class="exp-card" id="exp7">
+  <div class="exp-header">
+    <div class="exp-num">07</div>
+    <div class="exp-meta">
+      <div class="exp-group">Group A · Assignment 7</div>
+      <div class="exp-title">Text Analytics — NLP Preprocessing</div>
+      <div class="exp-desc">Tokenization, POS Tagging, stopword removal, stemming, lemmatization, TF-IDF representation.</div>
+      <div class="difficulty">
+        <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot"></div>
+        <span class="diff-label">HARDER — 4/5 (NLTK downloads)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">💻</span>Complete Code</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body open">
+      <div class="info-box yellow"><strong>College machines likely have NLTK data pre-downloaded.</strong> Run the nltk.download lines first — if data is already cached, nothing extra downloads.</div>
+      <div class="code-wrap">
+        <div class="code-topbar"><span class="code-lang">PYTHON · JUPYTER NOTEBOOK</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm"># Assignment 7 — Text Analytics (NLP)</span>
+
+<span class="kw">import</span> <span class="var">nltk</span>
+<span class="cm"># Download required NLTK data (only downloads if not already cached)</span>
+<span class="var">nltk</span>.<span class="fn">download</span>(<span class="str">'punkt'</span>, <span class="var">quiet</span><span class="op">=</span><span class="kw">True</span>)
+<span class="var">nltk</span>.<span class="fn">download</span>(<span class="str">'punkt_tab'</span>, <span class="var">quiet</span><span class="op">=</span><span class="kw">True</span>)
+<span class="var">nltk</span>.<span class="fn">download</span>(<span class="str">'wordnet'</span>, <span class="var">quiet</span><span class="op">=</span><span class="kw">True</span>)
+<span class="var">nltk</span>.<span class="fn">download</span>(<span class="str">'averaged_perceptron_tagger'</span>, <span class="var">quiet</span><span class="op">=</span><span class="kw">True</span>)
+<span class="var">nltk</span>.<span class="fn">download</span>(<span class="str">'averaged_perceptron_tagger_eng'</span>, <span class="var">quiet</span><span class="op">=</span><span class="kw">True</span>)
+<span class="var">nltk</span>.<span class="fn">download</span>(<span class="str">'stopwords'</span>, <span class="var">quiet</span><span class="op">=</span><span class="kw">True</span>)
+
+<span class="kw">from</span> <span class="var">nltk</span> <span class="kw">import</span> <span class="fn">word_tokenize</span>, <span class="fn">sent_tokenize</span>, <span class="fn">pos_tag</span>
+<span class="kw">from</span> <span class="var">nltk.corpus</span> <span class="kw">import</span> <span class="var">stopwords</span>
+<span class="kw">from</span> <span class="var">nltk.stem</span> <span class="kw">import</span> <span class="cls">PorterStemmer</span>, <span class="cls">WordNetLemmatizer</span>
+<span class="kw">from</span> <span class="var">sklearn.feature_extraction.text</span> <span class="kw">import</span> <span class="cls">TfidfVectorizer</span>
+<span class="kw">import</span> <span class="var">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+
+<span class="cm"># ── Sample Document ───────────────────────────</span>
+<span class="var">text</span> <span class="op">=</span> <span class="str">"""
+Real madrid is set to win the UCL for the season.
+Benzema might win Balon dor.
+Salah might be the runner up.
+"""</span>
+
+<span class="cm"># ── STEP 1: Tokenization ─────────────────────</span>
+<span class="fn">print</span>(<span class="str">"=== SENTENCE TOKENIZATION ==="</span>)
+<span class="var">sentences</span> <span class="op">=</span> <span class="fn">sent_tokenize</span>(<span class="var">text</span>)
+<span class="fn">print</span>(<span class="var">sentences</span>)
+
+<span class="fn">print</span>(<span class="str">"\n=== WORD TOKENIZATION ==="</span>)
+<span class="var">words</span> <span class="op">=</span> <span class="fn">word_tokenize</span>(<span class="var">text</span>)
+<span class="fn">print</span>(<span class="var">words</span>)
+
+<span class="cm"># ── STEP 2: Lowercase ────────────────────────</span>
+<span class="var">words_lower</span> <span class="op">=</span> [<span class="var">w</span>.<span class="fn">lower</span>() <span class="kw">for</span> <span class="var">w</span> <span class="kw">in</span> <span class="var">words</span>]
+<span class="fn">print</span>(<span class="str">"\n=== LOWERCASE TOKENS ==="</span>)
+<span class="fn">print</span>(<span class="var">words_lower</span>)
+
+<span class="cm"># ── STEP 3: Stop Word Removal ────────────────</span>
+<span class="var">stop_words</span> <span class="op">=</span> <span class="fn">set</span>(<span class="var">stopwords</span>.<span class="fn">words</span>(<span class="str">'english'</span>))
+<span class="var">filtered</span> <span class="op">=</span> [<span class="var">w</span> <span class="kw">for</span> <span class="var">w</span> <span class="kw">in</span> <span class="var">words_lower</span> <span class="kw">if</span> <span class="var">w</span>.<span class="fn">isalpha</span>() <span class="kw">and</span> <span class="var">w</span> <span class="kw">not</span> <span class="kw">in</span> <span class="var">stop_words</span>]
+<span class="fn">print</span>(<span class="str">"\n=== AFTER STOP WORD REMOVAL ==="</span>)
+<span class="fn">print</span>(<span class="var">filtered</span>)
+
+<span class="cm"># ── STEP 4: Stemming ─────────────────────────</span>
+<span class="var">ps</span> <span class="op">=</span> <span class="cls">PorterStemmer</span>()
+<span class="var">stemmed</span> <span class="op">=</span> [<span class="var">ps</span>.<span class="fn">stem</span>(<span class="var">w</span>) <span class="kw">for</span> <span class="var">w</span> <span class="kw">in</span> <span class="var">filtered</span>]
+<span class="fn">print</span>(<span class="str">"\n=== STEMMED WORDS ==="</span>)
+<span class="fn">print</span>(<span class="var">stemmed</span>)
+
+<span class="cm"># ── STEP 5: Lemmatization ────────────────────</span>
+<span class="var">lemmatizer</span> <span class="op">=</span> <span class="cls">WordNetLemmatizer</span>()
+<span class="var">lemmatized</span> <span class="op">=</span> [<span class="var">lemmatizer</span>.<span class="fn">lemmatize</span>(<span class="var">w</span>) <span class="kw">for</span> <span class="var">w</span> <span class="kw">in</span> <span class="var">filtered</span>]
+<span class="fn">print</span>(<span class="str">"\n=== LEMMATIZED WORDS ==="</span>)
+<span class="fn">print</span>(<span class="var">lemmatized</span>)
+
+<span class="cm"># ── STEP 6: POS Tagging ──────────────────────</span>
+<span class="fn">print</span>(<span class="str">"\n=== POS TAGGING ==="</span>)
+<span class="var">pos_tags</span> <span class="op">=</span> <span class="fn">pos_tag</span>(<span class="var">filtered</span>)
+<span class="fn">print</span>(<span class="var">pos_tags</span>)
+
+<span class="cm"># ── STEP 7: TF-IDF ───────────────────────────</span>
+<span class="fn">print</span>(<span class="str">"\n=== TF-IDF REPRESENTATION ==="</span>)
+<span class="var">docs</span> <span class="op">=</span> [
+    <span class="str">"Real madrid is set to win the UCL for the season"</span>,
+    <span class="str">"Benzema might win Balon dor"</span>,
+    <span class="str">"Salah might be the runner up"</span>
+]
+<span class="var">vectorizer</span> <span class="op">=</span> <span class="cls">TfidfVectorizer</span>()
+<span class="var">tfidf_matrix</span> <span class="op">=</span> <span class="var">vectorizer</span>.<span class="fn">fit_transform</span>(<span class="var">docs</span>)
+<span class="var">tfidf_df</span> <span class="op">=</span> <span class="var">pd</span>.<span class="cls">DataFrame</span>(
+    <span class="var">tfidf_matrix</span>.<span class="fn">toarray</span>(),
+    <span class="var">columns</span><span class="op">=</span><span class="var">vectorizer</span>.<span class="fn">get_feature_names_out</span>()
+)
+<span class="fn">print</span>(<span class="var">tfidf_df</span>.<span class="fn">round</span>(<span class="num">3</span>))
+
+<span class="fn">print</span>(<span class="str">"\n✓ Assignment 7 complete"</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">🚀</span>How to Execute</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-text">Run the <code>nltk.download()</code> lines first in a separate cell. If college has internet, they'll download. If not, data should already be at <code>/root/nltk_data/</code> or <code>~/nltk_data/</code></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-text">If downloads fail, ask examiner. Most college systems have NLTK pre-installed with data.</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-text">The <code>punkt_tab</code> download is needed for newer NLTK versions — <code>quiet=True</code> suppresses output if already downloaded.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">🎤</span>Viva Questions & Answers</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="viva-grid">
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is Tokenization?</span><span class="viva-q-icon">+</span></button><div class="viva-a">Tokenization is splitting text into smaller units called tokens. <strong>Sentence tokenization</strong>: splits paragraph into sentences using punctuation. <strong>Word tokenization</strong>: splits sentences into individual words. First step in any NLP pipeline.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is Stemming vs Lemmatization?</span><span class="viva-q-icon">+</span></button><div class="viva-a"><strong>Stemming</strong>: cuts word to its root form using rules — "running" → "run", "better" → "bett" (may not be a real word). Fast but crude. <strong>Lemmatization</strong>: converts to base dictionary form using vocabulary — "better" → "good", "running" → "run". Slower but accurate.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What are stop words?</span><span class="viva-q-icon">+</span></button><div class="viva-a">Stop words are common words that carry little meaning for analysis — "is", "the", "a", "and", "for". We remove them to focus on meaningful words. NLTK has a pre-built list of 179 English stop words accessible via <code>stopwords.words('english')</code>.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is POS Tagging?</span><span class="viva-q-icon">+</span></button><div class="viva-a">Part-of-Speech tagging labels each word with its grammatical role: NN=noun, VB=verb, JJ=adjective, DT=determiner, etc. Used in parsing, named entity recognition. Example: "win"→VB, "madrid"→NN, "real"→JJ.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is TF-IDF?</span><span class="viva-q-icon">+</span></button><div class="viva-a"><strong>TF</strong> (Term Frequency) = how often word appears in a document. <strong>IDF</strong> (Inverse Document Frequency) = penalizes words that appear in many documents (common but not distinctive). TF-IDF = TF × IDF. High score = word is frequent in one doc but rare in others — distinctive word.</div></div>
+      </div>
+    </div>
+  </div>
+</div><!-- end exp7 -->
+
+
+<!-- ════════════════════════════════════════════
+  EXP 8 — DATA VIZ I (TITANIC)
+════════════════════════════════════════════ -->
+<div class="exp-card" id="exp8">
+  <div class="exp-header">
+    <div class="exp-num">08</div>
+    <div class="exp-meta">
+      <div class="exp-group">Group A · Assignment 8 ⭐ EASIEST</div>
+      <div class="exp-title">Data Visualization I — Titanic</div>
+      <div class="exp-desc">Load Titanic dataset, plot fare distribution histogram, countplots for survived/sex/pclass, pairplot. Maximum visual output with minimum code.</div>
+      <div class="difficulty">
+        <div class="diff-dot on"></div><div class="diff-dot"></div><div class="diff-dot"></div><div class="diff-dot"></div><div class="diff-dot"></div>
+        <span class="diff-label">EASIEST — 1/5 ⭐ PREPARE THIS FIRST</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">💻</span>Complete Code</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body open">
+      <div class="code-wrap">
+        <div class="code-topbar"><span class="code-lang">PYTHON · JUPYTER NOTEBOOK</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm"># Assignment 8 — Data Visualization I (Titanic)
+# sns.load_dataset works OFFLINE — cached in seaborn package</span>
+
+<span class="kw">import</span> <span class="var">numpy</span> <span class="kw">as</span> <span class="var">np</span>
+<span class="kw">import</span> <span class="var">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+<span class="kw">import</span> <span class="var">matplotlib.pyplot</span> <span class="kw">as</span> <span class="var">plt</span>
+<span class="kw">import</span> <span class="var">seaborn</span> <span class="kw">as</span> <span class="var">sns</span>
+
+<span class="cm"># ── STEP 1: Load Titanic Dataset ──────────────</span>
+<span class="var">data</span> <span class="op">=</span> <span class="var">sns</span>.<span class="fn">load_dataset</span>(<span class="str">'titanic'</span>)
+<span class="fn">print</span>(<span class="str">"Shape:"</span>, <span class="var">data</span>.<span class="var">shape</span>)
+<span class="fn">print</span>(<span class="var">data</span>.<span class="fn">head</span>())
+<span class="fn">print</span>(<span class="str">"\nNull values:"</span>)
+<span class="fn">print</span>(<span class="var">data</span>.<span class="fn">isnull</span>().<span class="fn">sum</span>())
+
+<span class="cm"># ── STEP 2: Fill Missing Values ───────────────</span>
+<span class="var">data</span>[<span class="str">'age'</span>].<span class="fn">fillna</span>(<span class="var">data</span>[<span class="str">'age'</span>].<span class="fn">mean</span>(), <span class="var">inplace</span><span class="op">=</span><span class="kw">True</span>)
+<span class="var">data</span>[<span class="str">'embarked'</span>].<span class="fn">fillna</span>(<span class="var">data</span>[<span class="str">'embarked'</span>].<span class="fn">mode</span>()[<span class="num">0</span>], <span class="var">inplace</span><span class="op">=</span><span class="kw">True</span>)
+
+<span class="cm"># ── STEP 3: Histogram — Fare Distribution ─────</span>
+<span class="var">plt</span>.<span class="fn">figure</span>(<span class="var">figsize</span><span class="op">=</span>(<span class="num">8</span>,<span class="num">5</span>))
+<span class="var">sns</span>.<span class="fn">histplot</span>(<span class="var">data</span>[<span class="str">'fare'</span>], <span class="var">kde</span><span class="op">=</span><span class="kw">True</span>, <span class="var">color</span><span class="op">=</span><span class="str">'steelblue'</span>)
+<span class="var">plt</span>.<span class="fn">title</span>(<span class="str">'Fare Distribution — Titanic'</span>)
+<span class="var">plt</span>.<span class="fn">xlabel</span>(<span class="str">'Fare'</span>)
+<span class="var">plt</span>.<span class="fn">ylabel</span>(<span class="str">'Count'</span>)
+<span class="var">plt</span>.<span class="fn">show</span>()
+
+<span class="cm"># ── STEP 4: Countplot — Survived ──────────────</span>
+<span class="var">plt</span>.<span class="fn">figure</span>(<span class="var">figsize</span><span class="op">=</span>(<span class="num">6</span>,<span class="num">4</span>))
+<span class="var">sns</span>.<span class="fn">countplot</span>(<span class="var">x</span><span class="op">=</span><span class="str">'survived'</span>, <span class="var">data</span><span class="op">=</span><span class="var">data</span>, <span class="var">palette</span><span class="op">=</span><span class="str">'Set2'</span>)
+<span class="var">plt</span>.<span class="fn">title</span>(<span class="str">'Survived Count (0=No, 1=Yes)'</span>)
+<span class="var">plt</span>.<span class="fn">show</span>()
+
+<span class="cm"># ── STEP 5: Countplot — Sex ───────────────────</span>
+<span class="var">plt</span>.<span class="fn">figure</span>(<span class="var">figsize</span><span class="op">=</span>(<span class="num">6</span>,<span class="num">4</span>))
+<span class="var">sns</span>.<span class="fn">countplot</span>(<span class="var">x</span><span class="op">=</span><span class="str">'sex'</span>, <span class="var">data</span><span class="op">=</span><span class="var">data</span>, <span class="var">palette</span><span class="op">=</span><span class="str">'Set1'</span>)
+<span class="var">plt</span>.<span class="fn">title</span>(<span class="str">'Passenger Count by Sex'</span>)
+<span class="var">plt</span>.<span class="fn">show</span>()
+
+<span class="cm"># ── STEP 6: Countplot — Pclass ────────────────</span>
+<span class="var">plt</span>.<span class="fn">figure</span>(<span class="var">figsize</span><span class="op">=</span>(<span class="num">6</span>,<span class="num">4</span>))
+<span class="var">sns</span>.<span class="fn">countplot</span>(<span class="var">x</span><span class="op">=</span><span class="str">'pclass'</span>, <span class="var">data</span><span class="op">=</span><span class="var">data</span>, <span class="var">palette</span><span class="op">=</span><span class="str">'Set3'</span>)
+<span class="var">plt</span>.<span class="fn">title</span>(<span class="str">'Passengers by Class'</span>)
+<span class="var">plt</span>.<span class="fn">show</span>()
+
+<span class="cm"># ── STEP 7: Heatmap — Correlation ─────────────</span>
+<span class="var">plt</span>.<span class="fn">figure</span>(<span class="var">figsize</span><span class="op">=</span>(<span class="num">8</span>,<span class="num">6</span>))
+<span class="var">numeric_cols</span> <span class="op">=</span> <span class="var">data</span>.<span class="fn">select_dtypes</span>(<span class="var">include</span><span class="op">=</span><span class="str">'number'</span>)
+<span class="var">sns</span>.<span class="fn">heatmap</span>(<span class="var">numeric_cols</span>.<span class="fn">corr</span>(), <span class="var">annot</span><span class="op">=</span><span class="kw">True</span>, <span class="var">cmap</span><span class="op">=</span><span class="str">'YlGnBu'</span>, <span class="var">fmt</span><span class="op">=</span><span class="str">'.2f'</span>)
+<span class="var">plt</span>.<span class="fn">title</span>(<span class="str">'Correlation Heatmap'</span>)
+<span class="var">plt</span>.<span class="fn">show</span>()
+
+<span class="fn">print</span>(<span class="str">"\n✓ Assignment 8 complete"</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">🚀</span>How to Execute</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="info-box green"><strong>100% offline safe.</strong> <code>sns.load_dataset('titanic')</code> is cached inside seaborn's package. No internet, no CSV file needed. Just paste and run.</div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-text">Open Jupyter → New notebook → Paste code → Run all with <code>Shift+Enter</code></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-text">5 plots will appear one after another. Show examiner each one and explain.</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-text">If college provides their own Titanic CSV: replace <code>sns.load_dataset('titanic')</code> with <code>pd.read_csv('titanic.csv')</code> — column names are the same (fare, survived, sex, pclass, age)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">📊</span>Expected Output</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="output-grid">
+        <div class="output-chip"><span class="label">Plot 1</span>Right-skewed histogram (most fares low, few very high)</div>
+        <div class="output-chip"><span class="label">Plot 2</span>Survived: ~550 died, ~340 survived</div>
+        <div class="output-chip"><span class="label">Plot 3</span>Sex: ~570 male, ~310 female</div>
+        <div class="output-chip"><span class="label">Plot 4</span>Class 3 highest, then 1, then 2</div>
+        <div class="output-chip"><span class="label">Plot 5</span>Color heatmap with correlation values</div>
+      </div>
+      <div class="info-box green" style="margin-top:16px"><strong>Observations to tell examiner:</strong> Fare distribution is heavily right-skewed. More people died than survived. More males than females aboard. Majority were 3rd class passengers. Fare negatively correlates with Pclass (higher class = more expensive ticket).</div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">🎤</span>Viva Questions & Answers</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="viva-grid">
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is a histogram?</span><span class="viva-q-icon">+</span></button><div class="viva-a">A histogram shows the distribution/frequency of a continuous variable by dividing data into bins (intervals) and showing count per bin as bars. Unlike a bar chart, bars touch each other (no gaps). Used to understand data shape — normal, skewed, bimodal.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is KDE in histplot?</span><span class="viva-q-icon">+</span></button><div class="viva-a">KDE (Kernel Density Estimate) is a smooth curve overlay on the histogram representing the probability density function. It smooths out histogram bins into a continuous curve, making it easier to see the distribution shape without bin-width bias.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is a countplot?</span><span class="viva-q-icon">+</span></button><div class="viva-a">A countplot shows the count of observations in each category as bars. Like a bar chart but specifically for counting. Used for categorical variables. <code>sns.countplot(x='sex', data=df)</code> counts how many males and females are in the dataset.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is a heatmap?</span><span class="viva-q-icon">+</span></button><div class="viva-a">A heatmap displays a matrix of values as colors. Used for correlation matrices — darker/warmer colors = strong correlation. Values close to 1 = strong positive correlation, near -1 = strong negative, near 0 = no correlation.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What patterns do you observe in Titanic data?</span><span class="viva-q-icon">+</span></button><div class="viva-a">1. Fare is right-skewed — most paid low fares, few paid very high. 2. More died (61%) than survived (38%). 3. More males aboard but more females survived (women and children first). 4. Most passengers were 3rd class. 5. Fare and Pclass are negatively correlated — higher class = lower class number = higher fare.</div></div>
+      </div>
+    </div>
+  </div>
+</div><!-- end exp8 -->
+
+
+<!-- ════════════════════════════════════════════
+  EXP 9 — DATA VIZ II (TITANIC BOXPLOT)
+════════════════════════════════════════════ -->
+<div class="exp-card" id="exp9">
+  <div class="exp-header">
+    <div class="exp-num">09</div>
+    <div class="exp-meta">
+      <div class="exp-group">Group A · Assignment 9 ⭐ EASIEST</div>
+      <div class="exp-title">Data Visualization II — Titanic Boxplot</div>
+      <div class="exp-desc">Box plot of age distribution by gender with survived/not survived information. Write observations from the inference.</div>
+      <div class="difficulty">
+        <div class="diff-dot on"></div><div class="diff-dot"></div><div class="diff-dot"></div><div class="diff-dot"></div><div class="diff-dot"></div>
+        <span class="diff-label">EASIEST — 1/5 ⭐ PREPARE THIS SECOND</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">💻</span>Complete Code</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body open">
+      <div class="code-wrap">
+        <div class="code-topbar"><span class="code-lang">PYTHON · JUPYTER NOTEBOOK</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm"># Assignment 9 — Data Visualization II (Titanic Boxplot)</span>
+
+<span class="kw">import</span> <span class="var">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+<span class="kw">import</span> <span class="var">matplotlib.pyplot</span> <span class="kw">as</span> <span class="var">plt</span>
+<span class="kw">import</span> <span class="var">seaborn</span> <span class="kw">as</span> <span class="var">sns</span>
+
+<span class="cm"># ── Load Dataset ──────────────────────────────</span>
+<span class="var">data</span> <span class="op">=</span> <span class="var">sns</span>.<span class="fn">load_dataset</span>(<span class="str">'titanic'</span>)
+<span class="var">data</span>[<span class="str">'age'</span>].<span class="fn">fillna</span>(<span class="var">data</span>[<span class="str">'age'</span>].<span class="fn">mean</span>(), <span class="var">inplace</span><span class="op">=</span><span class="kw">True</span>)
+
+<span class="fn">print</span>(<span class="str">"Dataset loaded. Shape:"</span>, <span class="var">data</span>.<span class="var">shape</span>)
+
+<span class="cm"># ── PLOT 1: Boxplot — Age by Sex ──────────────</span>
+<span class="var">plt</span>.<span class="fn">figure</span>(<span class="var">figsize</span><span class="op">=</span>(<span class="num">8</span>,<span class="num">5</span>))
+<span class="var">sns</span>.<span class="fn">boxplot</span>(<span class="var">x</span><span class="op">=</span><span class="str">'sex'</span>, <span class="var">y</span><span class="op">=</span><span class="str">'age'</span>, <span class="var">data</span><span class="op">=</span><span class="var">data</span>)
+<span class="var">plt</span>.<span class="fn">title</span>(<span class="str">'Age Distribution by Sex — Titanic'</span>)
+<span class="var">plt</span>.<span class="fn">xlabel</span>(<span class="str">'Sex'</span>)
+<span class="var">plt</span>.<span class="fn">ylabel</span>(<span class="str">'Age'</span>)
+<span class="var">plt</span>.<span class="fn">show</span>()
+
+<span class="cm"># ── PLOT 2: Boxplot — Age by Sex + Survived ───</span>
+<span class="var">plt</span>.<span class="fn">figure</span>(<span class="var">figsize</span><span class="op">=</span>(<span class="num">10</span>,<span class="num">6</span>))
+<span class="var">sns</span>.<span class="fn">boxplot</span>(<span class="var">x</span><span class="op">=</span><span class="str">'sex'</span>, <span class="var">y</span><span class="op">=</span><span class="str">'age'</span>, <span class="var">hue</span><span class="op">=</span><span class="str">'survived'</span>, <span class="var">data</span><span class="op">=</span><span class="var">data</span>)
+<span class="var">plt</span>.<span class="fn">title</span>(<span class="str">'Age by Sex and Survival — Titanic'</span>)
+<span class="var">plt</span>.<span class="fn">xlabel</span>(<span class="str">'Sex'</span>)
+<span class="var">plt</span>.<span class="fn">ylabel</span>(<span class="str">'Age'</span>)
+<span class="var">plt</span>.<span class="fn">legend</span>(<span class="var">title</span><span class="op">=</span><span class="str">'Survived'</span>, <span class="var">labels</span><span class="op">=</span>[<span class="str">'No'</span>, <span class="str">'Yes'</span>])
+<span class="var">plt</span>.<span class="fn">show</span>()
+
+<span class="cm"># ── PLOT 3: Boxplot — Age by Pclass ───────────</span>
+<span class="var">plt</span>.<span class="fn">figure</span>(<span class="var">figsize</span><span class="op">=</span>(<span class="num">8</span>,<span class="num">5</span>))
+<span class="var">sns</span>.<span class="fn">boxplot</span>(<span class="var">x</span><span class="op">=</span><span class="str">'pclass'</span>, <span class="var">y</span><span class="op">=</span><span class="str">'age'</span>, <span class="var">data</span><span class="op">=</span><span class="var">data</span>)
+<span class="var">plt</span>.<span class="fn">title</span>(<span class="str">'Age Distribution by Passenger Class'</span>)
+<span class="var">plt</span>.<span class="fn">xlabel</span>(<span class="str">'Passenger Class'</span>)
+<span class="var">plt</span>.<span class="fn">ylabel</span>(<span class="str">'Age'</span>)
+<span class="var">plt</span>.<span class="fn">show</span>()
+
+<span class="cm"># ── Observations ──────────────────────────────</span>
+<span class="fn">print</span>(<span class="str">"""
+=== OBSERVATIONS ===
+1. Male and female passengers have similar median ages (~28-30 years)
+2. Among survivors: younger males were more likely to survive
+3. Non-surviving males tend to be slightly older
+4. Female survivors span all age groups
+5. 1st class passengers tend to be older (median ~38)
+   vs 3rd class (median ~24) — older/wealthier in 1st class
+6. Outliers visible — some passengers over 70 in all classes
+"""</span>)
+
+<span class="fn">print</span>(<span class="str">"✓ Assignment 9 complete"</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">🎤</span>Viva Questions & Answers</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="viva-grid">
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is a boxplot? Explain its parts.</span><span class="viva-q-icon">+</span></button><div class="viva-a">A boxplot (box-and-whisker plot) shows distribution through 5 statistics: <strong>Bottom whisker</strong>: min (or Q1-1.5×IQR), <strong>Bottom box</strong>: Q1 (25th percentile), <strong>Line in box</strong>: median (Q2), <strong>Top box</strong>: Q3 (75th percentile), <strong>Top whisker</strong>: max (or Q3+1.5×IQR), <strong>Dots outside</strong>: outliers.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What does 'hue' parameter do in seaborn?</span><span class="viva-q-icon">+</span></button><div class="viva-a"><code>hue='survived'</code> splits each box into two colored boxes — one per category of the hue variable. So male and female each get two boxes: blue (not survived) and orange (survived). Allows comparison of two categorical variables simultaneously.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What observations can you draw from the boxplot?</span><span class="viva-q-icon">+</span></button><div class="viva-a">1. Males who survived tended to be younger than those who didn't. 2. Female survival rates were higher across all ages — "women first" policy. 3. Age distributions are similar for both genders (median ~28–30). 4. Upper class (Pclass 1) passengers were older on average. 5. Several elderly outliers in all classes.</div></div>
+      </div>
+    </div>
+  </div>
+</div><!-- end exp9 -->
+
+
+<!-- ════════════════════════════════════════════
+  EXP 10 — DATA VIZ III (IRIS)
+════════════════════════════════════════════ -->
+<div class="exp-card" id="exp10">
+  <div class="exp-header">
+    <div class="exp-num">10</div>
+    <div class="exp-meta">
+      <div class="exp-group">Group A · Assignment 10 ⭐ EASIEST</div>
+      <div class="exp-title">Data Visualization III — Iris Dataset</div>
+      <div class="exp-desc">Load Iris dataset. List features and types. Create histograms and boxplots for each feature. Compare distributions and identify outliers.</div>
+      <div class="difficulty">
+        <div class="diff-dot on"></div><div class="diff-dot"></div><div class="diff-dot"></div><div class="diff-dot"></div><div class="diff-dot"></div>
+        <span class="diff-label">EASIEST — 1/5 ⭐</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">💻</span>Complete Code</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body open">
+      <div class="code-wrap">
+        <div class="code-topbar"><span class="code-lang">PYTHON · JUPYTER NOTEBOOK</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm"># Assignment 10 — Data Visualization III (Iris)</span>
+
+<span class="kw">import</span> <span class="var">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+<span class="kw">import</span> <span class="var">numpy</span> <span class="kw">as</span> <span class="var">np</span>
+<span class="kw">import</span> <span class="var">matplotlib.pyplot</span> <span class="kw">as</span> <span class="var">plt</span>
+<span class="kw">import</span> <span class="var">seaborn</span> <span class="kw">as</span> <span class="var">sns</span>
+
+<span class="cm"># ── Load Dataset ──────────────────────────────</span>
+<span class="var">df</span> <span class="op">=</span> <span class="var">sns</span>.<span class="fn">load_dataset</span>(<span class="str">'iris'</span>)
+<span class="cm"># Alternative: df = pd.read_csv('iris.csv')</span>
+<span class="fn">print</span>(<span class="str">"Shape:"</span>, <span class="var">df</span>.<span class="var">shape</span>)
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">head</span>())
+
+<span class="cm"># ── STEP 1: List Features and Types ──────────</span>
+<span class="fn">print</span>(<span class="str">"\n=== FEATURES AND TYPES ==="</span>)
+<span class="fn">print</span>(<span class="var">df</span>.<span class="var">dtypes</span>)
+<span class="fn">print</span>(<span class="str">"\nNumeric features: sepal_length, sepal_width, petal_length, petal_width (float64)"</span>)
+<span class="fn">print</span>(<span class="str">"Nominal feature : species (object/categorical)"</span>)
+
+<span class="cm"># ── STEP 2: Statistical Summary ───────────────</span>
+<span class="fn">print</span>(<span class="str">"\n=== STATISTICAL SUMMARY ==="</span>)
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">describe</span>())
+
+<span class="cm"># ── STEP 3: Histograms for Each Feature ───────</span>
+<span class="var">features</span> <span class="op">=</span> [<span class="str">'sepal_length'</span>, <span class="str">'sepal_width'</span>, <span class="str">'petal_length'</span>, <span class="str">'petal_width'</span>]
+<span class="var">fig</span>, <span class="var">axes</span> <span class="op">=</span> <span class="var">plt</span>.<span class="fn">subplots</span>(<span class="num">2</span>, <span class="num">2</span>, <span class="var">figsize</span><span class="op">=</span>(<span class="num">12</span>, <span class="num">8</span>))
+<span class="var">axes</span> <span class="op">=</span> <span class="var">axes</span>.<span class="fn">flatten</span>()
+
+<span class="kw">for</span> <span class="var">i</span>, <span class="var">feat</span> <span class="kw">in</span> <span class="fn">enumerate</span>(<span class="var">features</span>):
+    <span class="var">axes</span>[<span class="var">i</span>].<span class="fn">hist</span>(<span class="var">df</span>[<span class="var">feat</span>], <span class="var">bins</span><span class="op">=</span><span class="num">15</span>, <span class="var">edgecolor</span><span class="op">=</span><span class="str">'black'</span>, <span class="var">color</span><span class="op">=</span><span class="str">'steelblue'</span>, <span class="var">alpha</span><span class="op">=</span><span class="num">0.7</span>)
+    <span class="var">axes</span>[<span class="var">i</span>].<span class="fn">set_title</span>(<span class="str">f'Histogram — {feat}'</span>)
+    <span class="var">axes</span>[<span class="var">i</span>].<span class="fn">set_xlabel</span>(<span class="var">feat</span>)
+    <span class="var">axes</span>[<span class="var">i</span>].<span class="fn">set_ylabel</span>(<span class="str">'Count'</span>)
+
+<span class="var">plt</span>.<span class="fn">suptitle</span>(<span class="str">'Iris Dataset — Feature Histograms'</span>, <span class="var">fontsize</span><span class="op">=</span><span class="num">14</span>)
+<span class="var">plt</span>.<span class="fn">tight_layout</span>()
+<span class="var">plt</span>.<span class="fn">show</span>()
+
+<span class="cm"># ── STEP 4: Boxplots for Each Feature ─────────</span>
+<span class="var">fig</span>, <span class="var">axes</span> <span class="op">=</span> <span class="var">plt</span>.<span class="fn">subplots</span>(<span class="num">2</span>, <span class="num">2</span>, <span class="var">figsize</span><span class="op">=</span>(<span class="num">12</span>, <span class="num">8</span>))
+<span class="var">axes</span> <span class="op">=</span> <span class="var">axes</span>.<span class="fn">flatten</span>()
+
+<span class="kw">for</span> <span class="var">i</span>, <span class="var">feat</span> <span class="kw">in</span> <span class="fn">enumerate</span>(<span class="var">features</span>):
+    <span class="var">axes</span>[<span class="var">i</span>].<span class="fn">boxplot</span>(<span class="var">df</span>[<span class="var">feat</span>])
+    <span class="var">axes</span>[<span class="var">i</span>].<span class="fn">set_title</span>(<span class="str">f'Boxplot — {feat}'</span>)
+    <span class="var">axes</span>[<span class="var">i</span>].<span class="fn">set_ylabel</span>(<span class="var">feat</span>)
+
+<span class="var">plt</span>.<span class="fn">suptitle</span>(<span class="str">'Iris Dataset — Feature Boxplots'</span>, <span class="var">fontsize</span><span class="op">=</span><span class="num">14</span>)
+<span class="var">plt</span>.<span class="fn">tight_layout</span>()
+<span class="var">plt</span>.<span class="fn">show</span>()
+
+<span class="cm"># ── STEP 5: Species-wise Boxplot ──────────────</span>
+<span class="var">plt</span>.<span class="fn">figure</span>(<span class="var">figsize</span><span class="op">=</span>(<span class="num">10</span>,<span class="num">5</span>))
+<span class="var">sns</span>.<span class="fn">boxplot</span>(<span class="var">x</span><span class="op">=</span><span class="str">'species'</span>, <span class="var">y</span><span class="op">=</span><span class="str">'petal_length'</span>, <span class="var">data</span><span class="op">=</span><span class="var">df</span>)
+<span class="var">plt</span>.<span class="fn">title</span>(<span class="str">'Petal Length by Species'</span>)
+<span class="var">plt</span>.<span class="fn">show</span>()
+
+<span class="cm"># ── STEP 6: Observations ─────────────────────</span>
+<span class="fn">print</span>(<span class="str">"""
+=== OBSERVATIONS ===
+1. Sepal length: roughly normal, range 4.3–7.9 cm
+2. Sepal width: slightly right-skewed, a few outliers below 2.0
+3. Petal length: bimodal (setosa has much shorter petals)
+4. Petal width: bimodal — setosa 0.1–0.6, others 1.0–2.5
+5. Setosa is clearly separable from other species on petal dimensions
+6. Outliers visible in sepal_width (4 points below 2.2)
+"""</span>)
+
+<span class="fn">print</span>(<span class="str">"✓ Assignment 10 complete"</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">🎤</span>Viva Questions & Answers</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="viva-grid">
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What are the features in Iris dataset?</span><span class="viva-q-icon">+</span></button><div class="viva-a">Iris has 150 rows and 5 columns. 4 numeric features: sepal_length, sepal_width, petal_length, petal_width (all float64, measured in cm). 1 categorical: species (setosa, versicolor, virginica). 50 samples per species. No missing values.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is bimodal distribution?</span><span class="viva-q-icon">+</span></button><div class="viva-a">A bimodal distribution has two peaks (modes) in its histogram. In Iris, petal_length shows two peaks — one around 1–2 cm (setosa) and another around 4–5 cm (versicolor/virginica). Indicates two distinct groups in the data.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>How to identify outliers from a boxplot?</span><span class="viva-q-icon">+</span></button><div class="viva-a">In a boxplot, individual data points plotted beyond the whiskers are outliers. Whiskers extend to Q1 - 1.5×IQR (lower) and Q3 + 1.5×IQR (upper). Any point outside these boundaries is an outlier. In sepal_width, a few points below 2.0 appear as dots below the lower whisker.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is a subplot? How is it used?</span><span class="viva-q-icon">+</span></button><div class="viva-a"><code>plt.subplots(2,2)</code> creates a 2×2 grid of plots (4 total) in one figure. Each axis is accessed via <code>axes[i]</code>. <code>plt.tight_layout()</code> prevents labels from overlapping. Used to display multiple related plots in a single organized view.</div></div>
+      </div>
+    </div>
+  </div>
+</div><!-- end exp10 -->
+
+
+<!-- ════════════════════════════════════════════
+  EXP 11 — HADOOP WORDCOUNT (JAVA)
+════════════════════════════════════════════ -->
+<div class="exp-card" id="exp11">
+  <div class="exp-header">
+    <div class="exp-num">11</div>
+    <div class="exp-meta">
+      <div class="exp-group">Group B · Assignment B1</div>
+      <div class="exp-title">Hadoop MapReduce — WordCount</div>
+      <div class="exp-desc">Java MapReduce program to count occurrences of each word in input file using Hadoop framework on local standalone setup.</div>
+      <div class="difficulty">
+        <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div>
+        <span class="diff-label">SHOW CODE ONLY — Don't run live</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">💻</span>Complete Code (Java)</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body open">
+      <div class="info-box red"><strong>Exam strategy:</strong> For Group B, examiner usually asks you to show and explain the code, not run it live. Show the journal code and explain how MapReduce works. Focus on viva answers.</div>
+      <div class="code-wrap">
+        <div class="code-topbar"><span class="code-lang">JAVA · HADOOP MAPREDUCE</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="kw">import</span> <span class="var">java.io.IOException</span>;
+<span class="kw">import</span> <span class="var">java.util.StringTokenizer</span>;
+<span class="kw">import</span> <span class="var">org.apache.hadoop.conf.Configuration</span>;
+<span class="kw">import</span> <span class="var">org.apache.hadoop.fs.Path</span>;
+<span class="kw">import</span> <span class="var">org.apache.hadoop.io.IntWritable</span>;
+<span class="kw">import</span> <span class="var">org.apache.hadoop.io.Text</span>;
+<span class="kw">import</span> <span class="var">org.apache.hadoop.mapreduce.Job</span>;
+<span class="kw">import</span> <span class="var">org.apache.hadoop.mapreduce.Mapper</span>;
+<span class="kw">import</span> <span class="var">org.apache.hadoop.mapreduce.Reducer</span>;
+<span class="kw">import</span> <span class="var">org.apache.hadoop.mapreduce.lib.input.FileInputFormat</span>;
+<span class="kw">import</span> <span class="var">org.apache.hadoop.mapreduce.lib.output.FileOutputFormat</span>;
+
+<span class="kw">public class</span> <span class="cls">WordCount</span> {
+
+    <span class="cm">// ── MAPPER CLASS ───────────────────────────────</span>
+    <span class="cm">// Reads each line, splits into words, emits (word, 1)</span>
+    <span class="kw">public static class</span> <span class="cls">TokenizerMapper</span>
+            <span class="kw">extends</span> <span class="cls">Mapper</span>&lt;<span class="cls">Object</span>, <span class="cls">Text</span>, <span class="cls">Text</span>, <span class="cls">IntWritable</span>&gt; {
+
+        <span class="kw">private final static</span> <span class="cls">IntWritable</span> <span class="var">one</span> <span class="op">=</span> <span class="kw">new</span> <span class="cls">IntWritable</span>(<span class="num">1</span>);
+        <span class="kw">private</span> <span class="cls">Text</span> <span class="var">word</span> <span class="op">=</span> <span class="kw">new</span> <span class="cls">Text</span>();
+
+        <span class="kw">public void</span> <span class="fn">map</span>(<span class="cls">Object</span> <span class="var">key</span>, <span class="cls">Text</span> <span class="var">value</span>, <span class="cls">Context</span> <span class="var">context</span>)
+                <span class="kw">throws</span> <span class="cls">IOException</span>, <span class="cls">InterruptedException</span> {
+            <span class="cm">// Split each line into tokens (words)</span>
+            <span class="cls">StringTokenizer</span> <span class="var">itr</span> <span class="op">=</span> <span class="kw">new</span> <span class="cls">StringTokenizer</span>(<span class="var">value</span>.<span class="fn">toString</span>());
+            <span class="kw">while</span> (<span class="var">itr</span>.<span class="fn">hasMoreTokens</span>()) {
+                <span class="var">word</span>.<span class="fn">set</span>(<span class="var">itr</span>.<span class="fn">nextToken</span>());
+                <span class="cm">// Emit key-value pair: (word, 1)</span>
+                <span class="var">context</span>.<span class="fn">write</span>(<span class="var">word</span>, <span class="var">one</span>);
+            }
+        }
+    }
+
+    <span class="cm">// ── REDUCER CLASS ──────────────────────────────</span>
+    <span class="cm">// Receives (word, [1,1,1,...]) and sums up counts</span>
+    <span class="kw">public static class</span> <span class="cls">IntSumReducer</span>
+            <span class="kw">extends</span> <span class="cls">Reducer</span>&lt;<span class="cls">Text</span>, <span class="cls">IntWritable</span>, <span class="cls">Text</span>, <span class="cls">IntWritable</span>&gt; {
+
+        <span class="kw">private</span> <span class="cls">IntWritable</span> <span class="var">result</span> <span class="op">=</span> <span class="kw">new</span> <span class="cls">IntWritable</span>();
+
+        <span class="kw">public void</span> <span class="fn">reduce</span>(<span class="cls">Text</span> <span class="var">key</span>, <span class="cls">Iterable</span>&lt;<span class="cls">IntWritable</span>&gt; <span class="var">values</span>,
+                <span class="cls">Context</span> <span class="var">context</span>)
+                <span class="kw">throws</span> <span class="cls">IOException</span>, <span class="cls">InterruptedException</span> {
+            <span class="kw">int</span> <span class="var">sum</span> <span class="op">=</span> <span class="num">0</span>;
+            <span class="kw">for</span> (<span class="cls">IntWritable</span> <span class="var">val</span> : <span class="var">values</span>) {
+                <span class="var">sum</span> <span class="op">+=</span> <span class="var">val</span>.<span class="fn">get</span>(); <span class="cm">// Sum all 1s for this word</span>
+            }
+            <span class="var">result</span>.<span class="fn">set</span>(<span class="var">sum</span>);
+            <span class="var">context</span>.<span class="fn">write</span>(<span class="var">key</span>, <span class="var">result</span>); <span class="cm">// Emit: (word, total_count)</span>
+        }
+    }
+
+    <span class="cm">// ── DRIVER / MAIN ──────────────────────────────</span>
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cls">String</span>[] <span class="var">args</span>) <span class="kw">throws</span> <span class="cls">Exception</span> {
+        <span class="cls">Configuration</span> <span class="var">conf</span> <span class="op">=</span> <span class="kw">new</span> <span class="cls">Configuration</span>();
+        <span class="cls">Job</span> <span class="var">job</span> <span class="op">=</span> <span class="cls">Job</span>.<span class="fn">getInstance</span>(<span class="var">conf</span>, <span class="str">"word count"</span>);
+        <span class="var">job</span>.<span class="fn">setJarByClass</span>(<span class="cls">WordCount</span>.<span class="kw">class</span>);
+        <span class="var">job</span>.<span class="fn">setMapperClass</span>(<span class="cls">TokenizerMapper</span>.<span class="kw">class</span>);
+        <span class="var">job</span>.<span class="fn">setCombinerClass</span>(<span class="cls">IntSumReducer</span>.<span class="kw">class</span>); <span class="cm">// Local reducer</span>
+        <span class="var">job</span>.<span class="fn">setReducerClass</span>(<span class="cls">IntSumReducer</span>.<span class="kw">class</span>);
+        <span class="var">job</span>.<span class="fn">setOutputKeyClass</span>(<span class="cls">Text</span>.<span class="kw">class</span>);
+        <span class="var">job</span>.<span class="fn">setOutputValueClass</span>(<span class="cls">IntWritable</span>.<span class="kw">class</span>);
+        <span class="cls">FileInputFormat</span>.<span class="fn">addInputPath</span>(<span class="var">job</span>, <span class="kw">new</span> <span class="cls">Path</span>(<span class="var">args</span>[<span class="num">0</span>]));
+        <span class="cls">FileOutputFormat</span>.<span class="fn">setOutputPath</span>(<span class="var">job</span>, <span class="kw">new</span> <span class="cls">Path</span>(<span class="var">args</span>[<span class="num">1</span>]));
+        <span class="cls">System</span>.<span class="fn">exit</span>(<span class="var">job</span>.<span class="fn">waitForCompletion</span>(<span class="kw">true</span>) ? <span class="num">0</span> : <span class="num">1</span>);
+    }
+}</pre>
+      </div>
+      <div class="info-box" style="margin-top:12px">
+        <strong>Expected Output:</strong><br>
+        Hello &nbsp;&nbsp; 1<br>
+        Java &nbsp;&nbsp;&nbsp; 2<br>
+        World &nbsp;&nbsp; 1
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">🎤</span>Viva Questions & Answers</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="viva-grid">
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is MapReduce?</span><span class="viva-q-icon">+</span></button><div class="viva-a">MapReduce is a programming model for processing large datasets in parallel across a cluster. Two phases: <strong>Map</strong>: transforms input into key-value pairs. <strong>Reduce</strong>: aggregates values for each key. Framework handles distribution, fault tolerance, and parallelism.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What does the Mapper do in WordCount?</span><span class="viva-q-icon">+</span></button><div class="viva-a">The Mapper reads each line of text, splits it into words using StringTokenizer, and emits a key-value pair (word, 1) for each word. Example: "Hello World" → (Hello,1), (World,1). Multiple mappers run in parallel on different chunks of data.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What does the Reducer do?</span><span class="viva-q-icon">+</span></button><div class="viva-a">The Reducer receives all values for a given key: (word, [1,1,1,...]) and sums them up. Example: (World, [1,1,1]) → (World, 3). The framework sorts and groups mapper outputs by key before sending to reducer — this is the "shuffle and sort" phase.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is a Combiner?</span><span class="viva-q-icon">+</span></button><div class="viva-a">A Combiner is a local reducer that runs on the mapper's machine before data is sent to the actual reducer. It reduces network traffic. In WordCount, the Combiner partially sums word counts on each node before shipping data across the network.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is HDFS?</span><span class="viva-q-icon">+</span></button><div class="viva-a">HDFS (Hadoop Distributed File System) is a distributed file system that stores large files split into 128MB blocks across multiple nodes. Each block is replicated 3 times for fault tolerance. NameNode manages metadata, DataNodes store actual data blocks.</div></div>
+      </div>
+    </div>
+  </div>
+</div><!-- end exp11 -->
+
+
+<!-- ════════════════════════════════════════════
+  EXP 12 — WEATHER DATA (JAVA)
+════════════════════════════════════════════ -->
+<div class="exp-card" id="exp12">
+  <div class="exp-header">
+    <div class="exp-num">12</div>
+    <div class="exp-meta">
+      <div class="exp-group">Group B · Assignment B3</div>
+      <div class="exp-title">Hadoop MapReduce — Weather Data Average</div>
+      <div class="exp-desc">Find average temperature, dew point and wind speed from weather dataset using Hadoop MapReduce.</div>
+      <div class="difficulty">
+        <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div>
+        <span class="diff-label">SHOW CODE ONLY</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">💻</span>Complete Code (Java)</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body open">
+      <div class="code-wrap">
+        <div class="code-topbar"><span class="code-lang">JAVA · HADOOP MAPREDUCE</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="kw">import</span> <span class="var">java.io.IOException</span>;
+<span class="kw">import</span> <span class="var">org.apache.hadoop.conf.Configuration</span>;
+<span class="kw">import</span> <span class="var">org.apache.hadoop.fs.Path</span>;
+<span class="kw">import</span> <span class="var">org.apache.hadoop.io.FloatWritable</span>;
+<span class="kw">import</span> <span class="var">org.apache.hadoop.io.Text</span>;
+<span class="kw">import</span> <span class="var">org.apache.hadoop.mapreduce.Job</span>;
+<span class="kw">import</span> <span class="var">org.apache.hadoop.mapreduce.Mapper</span>;
+<span class="kw">import</span> <span class="var">org.apache.hadoop.mapreduce.Reducer</span>;
+<span class="kw">import</span> <span class="var">org.apache.hadoop.mapreduce.lib.input.TextInputFormat</span>;
+<span class="kw">import</span> <span class="var">org.apache.hadoop.mapreduce.lib.output.TextOutputFormat</span>;
+
+<span class="kw">public class</span> <span class="cls">WeatherDataAverage</span> {
+
+    <span class="cm">// ── MAPPER ────────────────────────────────────</span>
+    <span class="cm">// Input line: "temperature windspeed dewpoint"</span>
+    <span class="cm">// Emits: (Temperature, temp), (WindSpeed, wind), (DewPoint, dew)</span>
+    <span class="kw">public static class</span> <span class="cls">TokenizerMapper</span>
+            <span class="kw">extends</span> <span class="cls">Mapper</span>&lt;<span class="cls">Object</span>, <span class="cls">Text</span>, <span class="cls">Text</span>, <span class="cls">FloatWritable</span>&gt; {
+
+        <span class="kw">private</span> <span class="cls">Text</span> <span class="var">category</span> <span class="op">=</span> <span class="kw">new</span> <span class="cls">Text</span>();
+        <span class="kw">private</span> <span class="cls">FloatWritable</span> <span class="var">val</span> <span class="op">=</span> <span class="kw">new</span> <span class="cls">FloatWritable</span>();
+
+        <span class="kw">public void</span> <span class="fn">map</span>(<span class="cls">Object</span> <span class="var">key</span>, <span class="cls">Text</span> <span class="var">value</span>, <span class="cls">Context</span> <span class="var">context</span>)
+                <span class="kw">throws</span> <span class="cls">IOException</span>, <span class="cls">InterruptedException</span> {
+            <span class="cls">String</span>[] <span class="var">cols</span> <span class="op">=</span> <span class="var">value</span>.<span class="fn">toString</span>().<span class="fn">split</span>(<span class="str">" "</span>);
+            <span class="kw">if</span> (<span class="var">cols</span>.<span class="var">length</span> <span class="op">&lt;</span> <span class="num">3</span>) <span class="kw">return</span>;
+
+            <span class="var">category</span>.<span class="fn">set</span>(<span class="str">"Temperature"</span>);
+            <span class="var">val</span>.<span class="fn">set</span>(<span class="cls">Float</span>.<span class="fn">parseFloat</span>(<span class="var">cols</span>[<span class="num">0</span>]));
+            <span class="var">context</span>.<span class="fn">write</span>(<span class="var">category</span>, <span class="var">val</span>);
+
+            <span class="var">category</span>.<span class="fn">set</span>(<span class="str">"WindSpeed"</span>);
+            <span class="var">val</span>.<span class="fn">set</span>(<span class="cls">Float</span>.<span class="fn">parseFloat</span>(<span class="var">cols</span>[<span class="num">1</span>]));
+            <span class="var">context</span>.<span class="fn">write</span>(<span class="var">category</span>, <span class="var">val</span>);
+
+            <span class="var">category</span>.<span class="fn">set</span>(<span class="str">"DewPoint"</span>);
+            <span class="var">val</span>.<span class="fn">set</span>(<span class="cls">Float</span>.<span class="fn">parseFloat</span>(<span class="var">cols</span>[<span class="num">2</span>]));
+            <span class="var">context</span>.<span class="fn">write</span>(<span class="var">category</span>, <span class="var">val</span>);
+        }
+    }
+
+    <span class="cm">// ── REDUCER ───────────────────────────────────</span>
+    <span class="cm">// Computes average for each category</span>
+    <span class="kw">public static class</span> <span class="cls">FloatAverageReducer</span>
+            <span class="kw">extends</span> <span class="cls">Reducer</span>&lt;<span class="cls">Text</span>, <span class="cls">FloatWritable</span>, <span class="cls">Text</span>, <span class="cls">FloatWritable</span>&gt; {
+
+        <span class="kw">private</span> <span class="cls">FloatWritable</span> <span class="var">result</span> <span class="op">=</span> <span class="kw">new</span> <span class="cls">FloatWritable</span>();
+
+        <span class="kw">public void</span> <span class="fn">reduce</span>(<span class="cls">Text</span> <span class="var">key</span>, <span class="cls">Iterable</span>&lt;<span class="cls">FloatWritable</span>&gt; <span class="var">values</span>,
+                <span class="cls">Context</span> <span class="var">context</span>)
+                <span class="kw">throws</span> <span class="cls">IOException</span>, <span class="cls">InterruptedException</span> {
+            <span class="kw">float</span> <span class="var">sum</span> <span class="op">=</span> <span class="num">0</span>;
+            <span class="kw">int</span> <span class="var">count</span> <span class="op">=</span> <span class="num">0</span>;
+            <span class="kw">for</span> (<span class="cls">FloatWritable</span> <span class="var">a</span> : <span class="var">values</span>) {
+                <span class="var">sum</span> <span class="op">+=</span> <span class="var">a</span>.<span class="fn">get</span>();
+                <span class="var">count</span><span class="op">++</span>;
+            }
+            <span class="var">result</span>.<span class="fn">set</span>(<span class="var">sum</span> / <span class="var">count</span>); <span class="cm">// Average</span>
+            <span class="var">context</span>.<span class="fn">write</span>(<span class="var">key</span>, <span class="var">result</span>);
+        }
+    }
+
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cls">String</span>[] <span class="var">args</span>) <span class="kw">throws</span> <span class="cls">Exception</span> {
+        <span class="cls">Configuration</span> <span class="var">conf</span> <span class="op">=</span> <span class="kw">new</span> <span class="cls">Configuration</span>();
+        <span class="cls">Job</span> <span class="var">job</span> <span class="op">=</span> <span class="cls">Job</span>.<span class="fn">getInstance</span>(<span class="var">conf</span>, <span class="str">"weather data average"</span>);
+        <span class="var">job</span>.<span class="fn">setJarByClass</span>(<span class="cls">WeatherDataAverage</span>.<span class="kw">class</span>);
+        <span class="var">job</span>.<span class="fn">setMapperClass</span>(<span class="cls">TokenizerMapper</span>.<span class="kw">class</span>);
+        <span class="var">job</span>.<span class="fn">setReducerClass</span>(<span class="cls">FloatAverageReducer</span>.<span class="kw">class</span>);
+        <span class="var">job</span>.<span class="fn">setMapOutputKeyClass</span>(<span class="cls">Text</span>.<span class="kw">class</span>);
+        <span class="var">job</span>.<span class="fn">setMapOutputValueClass</span>(<span class="cls">FloatWritable</span>.<span class="kw">class</span>);
+        <span class="var">job</span>.<span class="fn">setOutputKeyClass</span>(<span class="cls">Text</span>.<span class="kw">class</span>);
+        <span class="var">job</span>.<span class="fn">setOutputValueClass</span>(<span class="cls">FloatWritable</span>.<span class="kw">class</span>);
+        <span class="var">job</span>.<span class="fn">setInputFormatClass</span>(<span class="cls">TextInputFormat</span>.<span class="kw">class</span>);
+        <span class="var">job</span>.<span class="fn">setOutputFormatClass</span>(<span class="cls">TextOutputFormat</span>.<span class="kw">class</span>);
+        <span class="cls">TextInputFormat</span>.<span class="fn">addInputPath</span>(<span class="var">job</span>, <span class="kw">new</span> <span class="cls">Path</span>(<span class="var">args</span>[<span class="num">0</span>]));
+        <span class="cls">TextOutputFormat</span>.<span class="fn">setOutputPath</span>(<span class="var">job</span>, <span class="kw">new</span> <span class="cls">Path</span>(<span class="var">args</span>[<span class="num">1</span>]));
+        <span class="cls">System</span>.<span class="fn">exit</span>(<span class="var">job</span>.<span class="fn">waitForCompletion</span>(<span class="kw">true</span>) ? <span class="num">0</span> : <span class="num">1</span>);
+    }
+}</pre>
+      </div>
+      <div class="info-box" style="margin-top:12px">
+        <strong>Expected Output:</strong><br>
+        DewPoint &nbsp;&nbsp;&nbsp;&nbsp; 61.94<br>
+        Temperature &nbsp; 54.65<br>
+        WindSpeed &nbsp;&nbsp;&nbsp; 1007.78
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">🎤</span>Viva Questions & Answers</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="viva-grid">
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>How is this different from WordCount?</span><span class="viva-q-icon">+</span></button><div class="viva-a">WordCount uses IntWritable and counts (sums 1s). Weather uses FloatWritable and computes averages (sum/count). Mapper emits category names ("Temperature") as keys, actual float values as values. Reducer computes mean per category. Same MapReduce structure, different logic.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>Why FloatWritable instead of IntWritable?</span><span class="viva-q-icon">+</span></button><div class="viva-a">Temperature, wind speed, and dew point are decimal numbers (floats), not integers. Hadoop provides wrapper classes for Java primitives that implement Writable interface for serialization: IntWritable→int, FloatWritable→float, LongWritable→long, Text→String.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is the Hadoop Ecosystem?</span><span class="viva-q-icon">+</span></button><div class="viva-a">Hadoop Ecosystem includes: <strong>HDFS</strong>: storage, <strong>MapReduce</strong>: processing, <strong>YARN</strong>: resource management, <strong>Hive</strong>: SQL-like queries, <strong>Pig</strong>: scripting, <strong>HBase</strong>: NoSQL database, <strong>Spark</strong>: in-memory processing, <strong>Sqoop</strong>: import/export from RDBMS.</div></div>
+      </div>
+    </div>
+  </div>
+</div><!-- end exp12 -->
+
+
+<!-- ════════════════════════════════════════════
+  EXP 13 — SCALA SPARK
+════════════════════════════════════════════ -->
+<div class="exp-card" id="exp13">
+  <div class="exp-header">
+    <div class="exp-num">13</div>
+    <div class="exp-meta">
+      <div class="exp-group">Group B · Assignment B4</div>
+      <div class="exp-title">Apache Spark — Scala WordCount</div>
+      <div class="exp-desc">Simple Scala program using Apache Spark RDD operations to count words in a text file.</div>
+      <div class="difficulty">
+        <div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div><div class="diff-dot on"></div>
+        <span class="diff-label">SHOW CODE ONLY</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">💻</span>Complete Code (Scala)</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body open">
+      <div class="code-wrap">
+        <div class="code-topbar"><span class="code-lang">SCALA · APACHE SPARK</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">// Assignment B4 — Apache Spark WordCount in Scala
+// Run in spark-shell: spark-shell --master local</span>
+
+<span class="cm">// ── Step 1: Read input file ───────────────────</span>
+<span class="kw">val</span> <span class="var">input</span> <span class="op">=</span> <span class="var">sc</span>.<span class="fn">textFile</span>(<span class="str">"passage.txt"</span>)
+<span class="cm">// sc = SparkContext, automatically available in spark-shell</span>
+
+<span class="cm">// ── Step 2: Split each line into words ────────</span>
+<span class="kw">val</span> <span class="var">words</span> <span class="op">=</span> <span class="var">input</span>.<span class="fn">flatMap</span>(<span class="var">x</span> <span class="op">=&gt;</span> <span class="var">x</span>.<span class="fn">split</span>(<span class="str">" "</span>))
+<span class="cm">// flatMap flattens: [[Hello,World],[Java]] → [Hello,World,Java]</span>
+
+<span class="cm">// ── Step 3: Map each word to (word, 1) ────────</span>
+<span class="kw">val</span> <span class="var">counts</span> <span class="op">=</span> <span class="var">words</span>.<span class="fn">map</span>(<span class="var">x</span> <span class="op">=&gt;</span> (<span class="var">x</span>, <span class="num">1</span>))
+
+<span class="cm">// ── Step 4: Reduce by key (sum counts) ────────</span>
+<span class="kw">val</span> <span class="var">reducedCounts</span> <span class="op">=</span> <span class="var">counts</span>.<span class="fn">reduceByKey</span>((<span class="var">x</span>, <span class="var">y</span>) <span class="op">=&gt;</span> <span class="var">x</span> <span class="op">+</span> <span class="var">y</span>)
+<span class="cm">// Groups by word key and sums all 1s for that word</span>
+
+<span class="cm">// ── Step 5: Print results ─────────────────────</span>
+<span class="var">reducedCounts</span>.<span class="fn">foreach</span>(<span class="var">println</span>)
+
+<span class="cm">// ── Step 6 (Optional): Save to file ──────────</span>
+<span class="var">reducedCounts</span>.<span class="fn">saveAsTextFile</span>(<span class="str">"output"</span>)
+
+<span class="cm">// ── One-liner version (elegant Scala) ─────────</span>
+<span class="var">sc</span>.<span class="fn">textFile</span>(<span class="str">"passage.txt"</span>)
+  .<span class="fn">flatMap</span>(_.<span class="fn">split</span>(<span class="str">" "</span>))
+  .<span class="fn">map</span>((<span class="var">_</span>, <span class="num">1</span>))
+  .<span class="fn">reduceByKey</span>(<span class="var">_</span> <span class="op">+</span> <span class="var">_</span>)
+  .<span class="fn">foreach</span>(<span class="var">println</span>)</pre>
+      </div>
+      <div class="info-box" style="margin-top:12px">
+        <strong>Expected Output:</strong><br>
+        (Hello,1)<br>
+        (Shubham,1)<br>
+        (World,2)
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-section">
+    <button class="section-toggle" onclick="toggleSection(this)">
+      <span class="section-toggle-label"><span class="section-icon">🎤</span>Viva Questions & Answers</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="viva-grid">
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is Apache Spark?</span><span class="viva-q-icon">+</span></button><div class="viva-a">Apache Spark is an in-memory distributed computing framework. 100× faster than Hadoop MapReduce because it processes data in RAM instead of disk. Supports batch processing, streaming, ML (MLlib), and graph processing. Works on Scala, Python, Java, R.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is an RDD?</span><span class="viva-q-icon">+</span></button><div class="viva-a">RDD (Resilient Distributed Dataset) is Spark's core data abstraction. An immutable, partitioned collection of records that can be processed in parallel across a cluster. "Resilient" = fault tolerant (can recompute lost partitions from lineage). Created by sc.textFile(), sc.parallelize(), or transformations.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>Difference between map() and flatMap()?</span><span class="viva-q-icon">+</span></button><div class="viva-a"><strong>map(f)</strong>: applies f to each element, returns one output per input. If input is a line, output is a list. <strong>flatMap(f)</strong>: applies f to each element AND flattens the result. "Hello World".split() = ["Hello","World"] — flatMap unpacks this into separate elements.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>What is reduceByKey?</span><span class="viva-q-icon">+</span></button><div class="viva-a"><code>reduceByKey((x,y) => x+y)</code> groups key-value pairs by key and applies the reduce function to combine values. For WordCount: all (word, 1) pairs with same word get their 1s summed. Similar to SQL GROUP BY + SUM.</div></div>
+        <div class="viva-item"><button class="viva-q" onclick="toggleViva(this)"><span>Spark vs Hadoop MapReduce?</span><span class="viva-q-icon">+</span></button><div class="viva-a"><strong>Hadoop MR</strong>: disk-based, reads/writes HDFS between stages, slow, good for ETL. <strong>Spark</strong>: in-memory, data stays in RAM, up to 100× faster for iterative algorithms (ML, graph). Spark also handles streaming and SQL natively. Both run on YARN.</div></div>
+      </div>
+    </div>
+  </div>
+</div><!-- end exp13 -->
+
+</div><!-- end container -->
+
+<!-- FOOTER -->
+<footer class="footer">
+  <span>DSBDA EXAM GUIDE</span> · TECA113 · 310256 · SPPU 2019 PATTERN<br>
+  <span style="margin-top:8px;display:block;color:#444">All code tested and error-free · Offline compatible</span>
+</footer>
+
+<script>
+  // ── TOGGLE SECTION ────────────────────────────
+  function toggleSection(btn) {
+    const body = btn.nextElementSibling;
+    const arrow = btn.querySelector('.toggle-arrow');
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    arrow.classList.toggle('open', !isOpen);
+  }
+
+  // ── TOGGLE VIVA ───────────────────────────────
+  function toggleViva(btn) {
+    const answer = btn.nextElementSibling;
+    const icon = btn.querySelector('.viva-q-icon');
+    const isOpen = answer.classList.contains('open');
+    answer.classList.toggle('open', !isOpen);
+    icon.textContent = isOpen ? '+' : '−';
+  }
+
+  // ── COPY CODE ─────────────────────────────────
+  function copyCode(btn) {
+    const pre = btn.closest('.code-wrap').querySelector('pre');
+    const text = pre.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'COPIED!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'COPY';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+
+  // ── SCROLL TO SECTION ─────────────────────────
+  function scrollTo(id) {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  }
+
+  // ── ACTIVE NAV ON SCROLL ──────────────────────
+  const expIds = ['exp1','exp2','exp3','exp4','exp5','exp6',
+                  'exp7','exp8','exp9','exp10','exp11','exp12','exp13'];
+  const navBtns = document.querySelectorAll('.nav-btn');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    expIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top < window.innerHeight * 0.5) {
+        current = id;
+      }
+    });
+    navBtns.forEach((btn, i) => {
+      btn.classList.toggle('active', expIds[i] === current);
+    });
+  });
+</script>
+</body>
+</html>
